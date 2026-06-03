@@ -127,6 +127,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .priority-flag{font-size:18px;line-height:1;flex-shrink:0}
 .priority-label{font-size:13.5px;font-weight:500}
 .priority-item.sel{background:#eff6ff;border-color:var(--blue)}
+.wa-error{color:var(--error);font-size:11px;margin-top:3px;display:none}
+.wa-error.on{display:block}
 </style>
 </head>
 <body>
@@ -802,11 +804,10 @@ function fuChoose(fuBlockId, chainOfId, choice, btnEl){
   if(choice === 'sim'){
     document.getElementById(chainOfId).classList.add('visible');
   } else {
-    // Não: hide chain and reset
+    // Não: hide chain, reset, hide the question block
     var chainBox = document.getElementById(chainOfId);
     chainBox.classList.remove('visible');
     resetOutroField(chainBox);
-    // hide this fu-block too
     fuBlock.classList.remove('on');
     fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
   }
@@ -818,13 +819,14 @@ function fuDynChoose(fuBlock, ofId, choice, btnEl){
   btnEl.classList.add('sel');
 
   if(choice === 'sim'){
-    // append a new chain-row after the fu-block
     var row = makeChainRow(ofId);
     fuBlock.parentNode.insertBefore(row, fuBlock.nextSibling);
-    fuBlock.classList.remove('on'); // hide question, new row is visible
+    fuBlock.classList.remove('on');
   } else {
-    // Não: remove everything after this fu-block and hide it
+    // Não: collapse everything after this fu-block, then hide it
     removeFrom(ofId, fuBlock);
+    fuBlock.classList.remove('on');
+    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
   }
 }
 
@@ -982,7 +984,8 @@ function buildSlotHTML(slot, idx) {
     html +=
       '<div style="margin-bottom:8px">'+
         '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>'+
-        '<input type="text" value="'+escHtml(slot.wa_num||'')+'" placeholder="+55 (99) 99999-9999" oninput="ctaSlots['+idx+'].wa_num=this.value">'+
+        '<input type="text" value="'+escHtml(slot.wa_num||'')+'" placeholder="+55 (99) 99999-9999" oninput="ctaSlots['+idx+'].wa_num=this.value;validateWA(this)">'+
+      '<div class="wa-error"></div>'+
       '</div>'+
       '<div>'+
         '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>'+
@@ -1397,11 +1400,11 @@ function sendBriefing(){
     assignees: ASSIGNEES
   };
 
-  // due_date: convert date string to Unix ms
+  // start_date: convert date string to Unix ms
   var dueDateEl = document.getElementById('due_date');
   if(dueDateEl && dueDateEl.value) {
-    mainPayload.due_date = new Date(dueDateEl.value).getTime();
-    mainPayload.due_date_time = false;
+    mainPayload.start_date = new Date(dueDateEl.value).getTime();
+    mainPayload.start_date_time = false;
   }
 
   // priority: 1=urgent, 2=high, 3=normal, 4=low in ClickUp API
@@ -1433,7 +1436,7 @@ function sendBriefing(){
           assignees: ASSIGNEES,
           parent: parentId
         };
-        if(mainPayload.due_date) subPayload.due_date = mainPayload.due_date;
+        if(mainPayload.start_date) { subPayload.start_date = mainPayload.start_date; subPayload.start_date_time = false; }
         if(mainPayload.priority) subPayload.priority = mainPayload.priority;
         return clickupPost('https://api.clickup.com/api/v2/list/'+LIST_ID+'/task', subPayload);
       });
@@ -1475,7 +1478,32 @@ function resetForm(){
   dots(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ---- checkbox style sync ---- */
+/* ---- WhatsApp number validation (max 11 digits) ---- */
+function validateWA(inp) {
+  var digits = inp.value.replace(/\D/g,'');
+  var err = inp.parentNode.querySelector('.wa-error') || inp.nextElementSibling;
+  if(!err || !err.classList.contains('wa-error')) {
+    err = document.createElement('div');
+    err.className = 'wa-error';
+    err.textContent = 'Máximo 11 dígitos numéricos.';
+    inp.parentNode.insertBefore(err, inp.nextSibling);
+  }
+  if(digits.length > 11) {
+    err.classList.add('on');
+    inp.style.borderColor = 'var(--error)';
+  } else {
+    err.classList.remove('on');
+    inp.style.borderColor = '';
+  }
+}
+
+// attach validation to all WA number inputs after DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  ['integ_wa_val'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('input', function(){ validateWA(this); });
+  });
+});
 document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(function(chk){
   chk.addEventListener('change',function(){chk.closest('.checkbox-item').classList.toggle('checked',chk.checked);});
 });
