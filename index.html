@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing – Criação de Landing Page</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f1e35;--blue:#2563eb;--blue-light:#dbeafe;
+  --surface:#f8f9fc;--border:#e2e8f0;
+  --text:#1e293b;--text-muted:#64748b;--white:#ffffff;
+  --success:#059669;--success-light:#d1fae5;--error:#dc2626;
+  --radius:10px;--radius-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;line-height:1.6}
+.hero{background:var(--navy);padding:52px 24px 52px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 110%,rgba(37,99,235,.35) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#93c5fd;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:99px;margin-bottom:20px}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(26px,5vw,46px);color:#fff;line-height:1.15;margin-bottom:14px}
+.hero h1 em{font-style:italic;color:#93c5fd}
+.hero p{color:rgba(255,255,255,.6);font-size:15px;max-width:480px;margin:0 auto}
+.progress-bar-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:13px 24px}
+.progress-inner{max-width:800px;margin:0 auto;display:flex;align-items:center;gap:16px}
+.progress-steps{display:flex;gap:6px;flex:1}
+.step-dot{height:4px;flex:1;border-radius:2px;background:var(--border);transition:background .3s}
+.step-dot.active{background:var(--blue)}
+.step-dot.done{background:var(--success)}
+.progress-label{font-size:12px;color:var(--text-muted);white-space:nowrap;font-weight:500}
+.container{max-width:800px;margin:0 auto;padding:24px 20px 60px}
+.step-card{display:none;background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;animation:slideIn .25s ease}
+.step-card.visible{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.card-header{padding:24px 28px 0;display:flex;align-items:flex-start;gap:16px}
+.step-icon{width:42px;height:42px;border-radius:var(--radius);background:var(--blue-light);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:700}
+.card-header-text h2{font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy);line-height:1.2}
+.card-header-text p{font-size:13px;color:var(--text-muted);margin-top:4px}
+.card-body{padding:24px 28px 28px}
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
+label .req{color:var(--blue);margin-left:3px}
+input[type="text"],input[type="url"],input[type="email"],select,textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+textarea{resize:vertical;min-height:90px;line-height:1.55}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.outro-field{display:none;margin-top:10px}
+.outro-field.visible{display:block}
+/* input with × clear button */
+.input-x-wrap{position:relative;display:flex;align-items:center}
+.input-x-wrap input{padding-right:36px}
+.input-x-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:#e2e8f0;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:#64748b;transition:background .15s,color .15s;flex-shrink:0;line-height:1;padding:0}
+.input-x-btn:hover{background:#fecaca;color:#dc2626}
+/* follow-up sim/nao */
+.fu-block{margin-top:10px;padding:12px 14px;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);display:none}
+.fu-block.on{display:block}
+.fu-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
+.radio-group{display:flex;gap:10px}
+.radio-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;user-select:none;transition:background .15s,border-color .15s}
+.radio-btn:hover{background:#eff6ff;border-color:#bfdbfe}
+.radio-btn.sel{background:#eff6ff;border-color:var(--blue);color:var(--blue);font-weight:600}
+/* chain rows appended inside .outro-field */
+.chain-row{margin-top:10px}
+/* sub-fields for cores/tipografia */
+.sub-fields{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}}
+.checkbox-group{display:flex;flex-direction:column;gap:8px}
+.checkbox-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:background .15s,border-color .15s;user-select:none}
+.checkbox-item:hover{background:var(--surface);border-color:#c7d2fe}
+.checkbox-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);flex-shrink:0}
+.checkbox-item span{font-size:13.5px}
+.checkbox-item.checked{background:#eff6ff;border-color:#bfdbfe}
+.nav-buttons{display:flex;gap:12px;margin-top:28px;justify-content:flex-end}
+.btn{padding:11px 24px;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted)}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 1px 8px rgba(37,99,235,.25)}
+.btn-primary:hover{background:#1d4ed8}
+.btn-primary:active{transform:scale(.98)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-warning{background:#fff;color:#b45309;border:1px solid #fcd34d}
+.btn-warning:hover{background:#fef3c7}
+.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius);padding:14px 16px;font-size:13px;color:#1e40af;margin-bottom:24px;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.error-msg{color:var(--error);font-size:12px;margin-top:4px;display:none}
+.field.has-error input,.field.has-error textarea,.field.has-error select{border-color:var(--error)}
+.field.has-error .error-msg{display:block}
+.review-section{margin-bottom:24px}
+.review-section:last-of-type{margin-bottom:0}
+.review-section-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.review-row{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--surface)}
+.review-row:last-child{border-bottom:none}
+.review-label{font-size:13px;color:var(--text-muted);min-width:170px;flex-shrink:0}
+.review-value{font-size:13px;color:var(--text);flex:1;word-break:break-word}
+.review-value.empty{color:#cbd5e1;font-style:italic}
+@media(max-width:500px){.review-row{flex-direction:column;gap:2px}.review-label{min-width:unset}}
+#success-screen{display:none;text-align:center;padding:60px 28px;background:var(--white);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow);animation:slideIn .3s ease}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--success-light);color:var(--success);font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+#success-screen h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);margin-bottom:12px}
+#success-screen p{color:var(--text-muted);font-size:14px;max-width:420px;margin:0 auto 8px}
+.success-tag{display:inline-block;margin-top:12px;padding:8px 20px;background:var(--success-light);color:var(--success);border-radius:99px;font-size:13px;font-weight:600}
+/* single-select chip group */
+.chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.chip{padding:8px 18px;border:1px solid var(--border);border-radius:99px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--white);color:var(--text-muted);transition:all .15s;user-select:none;font-weight:500}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.sel{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.chip.sel-outro{background:#eff6ff;border-color:var(--blue);color:var(--blue);font-weight:600}
+/* CTA slot system */
+.cta-slot{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.cta-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cta-slot-label{font-size:13px;font-weight:600;color:var(--navy)}
+.cta-slot-remove{background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:13px;padding:2px 6px;border-radius:6px;transition:background .15s,color .15s}
+.cta-slot-remove:hover{background:#fecaca;color:var(--error)}
+.chip.locked{opacity:.45;cursor:not-allowed;pointer-events:none;background:#f1f5f9}
+.chip.locked-label{opacity:.55;cursor:not-allowed;pointer-events:none;font-size:11px;padding:8px 12px;background:#f1f5f9;border-style:dashed}
+.add-cta-block{margin-top:4px;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.add-cta-block .fu-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
+.cta-extra-field{margin-top:10px;display:none}
+.cta-extra-field.on{display:block}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">Performance Digital</div>
+  <h1>Briefing – Criação de<br><em>Landing Page</em></h1>
+  <p>Preencha as informações abaixo para darmos início à criação da sua landing page.</p>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-inner">
+    <div class="progress-steps" id="progressDots"></div>
+    <span class="progress-label" id="progressLabel">Etapa 1 de 7</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ETAPA 1 -->
+  <div class="step-card visible" id="step-1">
+    <div class="card-header">
+      <div class="step-icon">1</div>
+      <div class="card-header-text">
+        <h2>Informações Gerais</h2>
+        <p>Dados básicos sobre o projeto e o objetivo da página.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field" id="f-empresa">
+        <label>Nome da Empresa / Projeto <span class="req">*</span></label>
+        <input type="text" id="empresa" placeholder="Ex: Bastelli Marketing">
+        <span class="error-msg">Campo obrigatório.</span>
+      </div>
+      <div class="field">
+        <label>Produto / Serviço</label>
+        <input type="text" id="produto" placeholder="Ex: Curso online, Consultoria, Imóvel...">
+      </div>
+      <div class="field">
+        <label>Tipo de Página</label>
+        <div class="checkbox-group" id="tipo-pagina">
+          <label class="checkbox-item"><input type="checkbox" value="Captura de leads"><span>Captura de leads</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Venda direta"><span>Venda direta</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Página institucional"><span>Página institucional</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Página de produto/imóvel"><span>Página de produto / imóvel</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-tipo',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-tipo">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Descreva o tipo..." oninput="onOutroType(this,'of-tipo')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-tipo','tipo-pagina')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Objetivo Principal da Página</label>
+        <textarea id="objetivo" placeholder="O que você quer que o visitante faça ao chegar na página?"></textarea>
+      </div>
+      <div class="field">
+        <label>Já possui site?</label>
+        <div class="chip-group" id="chips-site">
+          <div class="chip" onclick="pickChip('chips-site','Sim','of-site',null)" data-of="of-site">Sim</div>
+          <div class="chip" onclick="pickChip('chips-site','Não',null,null)">Não</div>
+        </div>
+        <input type="hidden" id="tem_site" value="">
+        <div class="outro-field" id="of-site">
+          <input type="url" id="url_site" placeholder="https://seusite.com.br">
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-primary" onclick="goTo(2)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 2 -->
+  <div class="step-card" id="step-2">
+    <div class="card-header">
+      <div class="step-icon">2</div>
+      <div class="card-header-text">
+        <h2>Público-Alvo</h2>
+        <p>Quem é o visitante ideal e o que ele sente.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Quem é o Público?</label>
+        <textarea id="publico" placeholder="Descreva o perfil do seu cliente ideal..."></textarea>
+      </div>
+      <div class="field">
+        <label>Nível de Consciência</label>
+        <div class="chip-group" id="chips-consciencia">
+          <div class="chip" onclick="pickChip('chips-consciencia','Não sabe que tem problema',null,null)">Não sabe que tem problema</div>
+          <div class="chip" onclick="pickChip('chips-consciencia','Sabe o problema',null,null)">Sabe o problema</div>
+          <div class="chip" onclick="pickChip('chips-consciencia','Busca solução',null,null)">Busca solução</div>
+          <div class="chip" onclick="pickChip('chips-consciencia','Pronto para comprar',null,null)">Pronto para comprar</div>
+          <div class="chip" onclick="pickChip('chips-consciencia','Outro','of-consciencia',null)" data-of="of-consciencia">Outro</div>
+        </div>
+        <input type="hidden" id="consciencia" value="">
+        <div class="outro-field" id="of-consciencia">
+          <div class="input-x-wrap">
+            <input type="text" id="consciencia_outro" placeholder="Descreva o nível..." oninput="onOutroType(this,'of-consciencia')">
+            <button class="input-x-btn" type="button" onclick="clearChipOutro('chips-consciencia','of-consciencia')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Principais Dores</label>
+        <textarea id="dores" placeholder="Quais problemas, frustrações ou medos o público enfrenta?"></textarea>
+      </div>
+      <div class="field">
+        <label>Principais Desejos</label>
+        <textarea id="desejos" placeholder="O que o público quer conquistar ou sentir?"></textarea>
+      </div>
+      <div class="field">
+        <label>Objeções Comuns</label>
+        <textarea id="objecoes" placeholder="Por que alguém deixaria de comprar ou não confiar?"></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(1)">← Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 3 -->
+  <div class="step-card" id="step-3">
+    <div class="card-header">
+      <div class="step-icon">3</div>
+      <div class="card-header-text">
+        <h2>Proposta de Valor</h2>
+        <p>O que está sendo oferecido e qual é o conceito central da página.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>O que está sendo oferecido?</label>
+        <textarea id="oferta" placeholder="Descreva o produto ou serviço com clareza..."></textarea>
+      </div>
+      <div class="field">
+        <label>Diferencial Competitivo</label>
+        <textarea id="diferencial" placeholder="Por que escolher você e não o concorrente?"></textarea>
+      </div>
+      <div class="field">
+        <label>Transformação Prometida</label>
+        <div class="field-row" style="margin-top:6px">
+          <div>
+            <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Antes</label>
+            <textarea id="transformacao_antes" placeholder="Ex: Sem clientes, agenda vazia..." style="min-height:80px"></textarea>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px">Depois</label>
+            <textarea id="transformacao_depois" placeholder="Ex: Agenda lotada em 30 dias..." style="min-height:80px"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Big Idea / Conceito Central</label>
+        <textarea id="big_idea" placeholder="Qual é a ideia principal que sustenta toda a página?"></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(2)">← Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 4 -->
+  <div class="step-card" id="step-4">
+    <div class="card-header">
+      <div class="step-icon">4</div>
+      <div class="card-header-text">
+        <h2>Estrutura e Copywriting</h2>
+        <p>Seções da página, tom de voz e gatilhos mentais.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Seções da Landing Page</label>
+        <div class="checkbox-group" id="secoes">
+          <label class="checkbox-item"><input type="checkbox" value="Hero (acima da dobra)" onchange="onHeroCheck(this)"><span>Hero (acima da dobra)</span></label>
+          <!-- HERO SUB-PANEL — appears right below Hero option -->
+          <div id="hero-panel" style="display:none;margin:4px 0 8px 0;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius)">
+            <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">O que deseja incluir no Hero?</div>
+            <div class="checkbox-group" id="hero-items">
+              <label class="checkbox-item"><input type="checkbox" value="Vídeo (VSL)" onchange="onHeroItemCheck('video',this)"><span>Vídeo (VSL)</span></label>
+              <div class="outro-field" id="hero-of-video"><input type="url" id="hero_video_url" placeholder="Cole o link do vídeo..."></div>
+              <label class="checkbox-item"><input type="checkbox" value="Imagem" onchange="onHeroItemCheck('imagem',this)"><span>Imagem</span></label>
+              <div class="outro-field" id="hero-of-imagem"><textarea id="hero_imagem_links" placeholder="Cole os links das imagens..." style="min-height:70px"></textarea></div>
+              <label class="checkbox-item"><input type="checkbox" value="Headline" onchange="onHeroItemCheck('headline',this)"><span>Headline</span></label>
+              <div class="outro-field" id="hero-of-headline"><input type="text" id="hero_headline_val" placeholder="Digite a headline do hero..."></div>
+              <label class="checkbox-item"><input type="checkbox" value="Subheadline" onchange="onHeroItemCheck('subheadline',this)"><span>Subheadline</span></label>
+              <div class="outro-field" id="hero-of-subheadline"><input type="text" id="hero_subheadline_val" placeholder="Digite a subheadline do hero..."></div>
+              <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onHeroItemCheck('outro',this)"><span>Outro</span></label>
+              <div class="outro-field" id="hero-of-outro"><input type="text" id="hero_outro_val" placeholder="Descreva o elemento..."></div>
+            </div>
+          </div>
+          <label class="checkbox-item"><input type="checkbox" value="Prova social"><span>Prova social</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Problema / dor"><span>Problema / dor</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Solução / método"><span>Solução / método</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Benefícios"><span>Benefícios</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Diferenciais"><span>Diferenciais</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Portfólio / exemplos"><span>Portfólio / exemplos</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Como funciona"><span>Como funciona</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Oferta"><span>Oferta</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="FAQ"><span>FAQ</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="CTA final"><span>CTA final</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-secoes',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-secoes">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Descreva a seção..." oninput="onOutroType(this,'of-secoes')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-secoes','secoes')" title="Remover">✕</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Tom de Voz</label>
+        <div class="checkbox-group" id="tom">
+          <label class="checkbox-item"><input type="checkbox" value="Profissional"><span>Profissional</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Técnico"><span>Técnico</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Emocional"><span>Emocional</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Direto"><span>Direto</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Premium"><span>Premium</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-tom',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-tom">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Descreva o tom..." oninput="onOutroType(this,'of-tom')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-tom','tom')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Gatilhos Mentais Principais</label>
+        <div class="checkbox-group" id="gatilhos">
+          <label class="checkbox-item"><input type="checkbox" value="Autoridade"><span>Autoridade</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Prova social"><span>Prova social</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Escassez"><span>Escassez</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Urgência"><span>Urgência</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Clareza"><span>Clareza</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Segurança"><span>Segurança</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-gatilhos',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-gatilhos">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Descreva o gatilho..." oninput="onOutroType(this,'of-gatilhos')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-gatilhos','gatilhos')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Mensagens que NÃO podem faltar</label>
+        <textarea id="mensagens" placeholder="Pontos obrigatórios que devem aparecer na página..."></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(3)">← Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(5)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 5 -->
+  <div class="step-card" id="step-5">
+    <div class="card-header">
+      <div class="step-icon">5</div>
+      <div class="card-header-text">
+        <h2>Design e Identidade Visual</h2>
+        <p>Referências, cores, tipografia e estilo da página.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Referências Visuais</label>
+        <textarea id="referencias" placeholder="Links ou descrições de páginas que você gosta..."></textarea>
+      </div>
+
+      <!-- CORES -->
+      <div class="field">
+        <label>Cores Principais</label>
+        <div class="sub-fields">
+          <input type="text" id="cor_primaria" placeholder="Cores Primárias – Ex: #1A3A5C, azul marinho...">
+          <input type="text" id="cor_secundaria" placeholder="Cores Secundárias – Ex: #E8A020, dourado..." oninput="onSecondaryType(this,'of-cores-extra')">
+        </div>
+        <div class="outro-field" id="of-cores-extra">
+          <div class="fu-block on" id="fu-cores-q">
+            <div class="fu-label">Deseja adicionar mais alguma cor extra?</div>
+            <div class="radio-group">
+              <div class="radio-btn" onclick="fuChoose('fu-cores-q','of-cores-chain','sim',this)">Sim</div>
+              <div class="radio-btn" onclick="fuChoose('fu-cores-q','of-cores-chain','nao',this)">Não</div>
+            </div>
+          </div>
+          <div class="outro-field" id="of-cores-chain">
+            <div class="input-x-wrap">
+              <input type="text" placeholder="Cor extra..." oninput="onOutroType(this,'of-cores-chain')">
+              <button class="input-x-btn" type="button" onclick="clearChainBox('of-cores-chain','fu-cores-q')" title="Remover">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIPOGRAFIA -->
+      <div class="field">
+        <label>Tipografia</label>
+        <div class="sub-fields">
+          <input type="text" id="fonte_primaria" placeholder="Fonte Primária – Ex: Montserrat, Inter...">
+          <input type="text" id="fonte_secundaria" placeholder="Fonte Secundária – Ex: Lato, Open Sans..." oninput="onSecondaryType(this,'of-fonte-extra')">
+        </div>
+        <div class="outro-field" id="of-fonte-extra">
+          <div class="fu-block on" id="fu-fonte-q">
+            <div class="fu-label">Deseja adicionar mais alguma tipografia?</div>
+            <div class="radio-group">
+              <div class="radio-btn" onclick="fuChoose('fu-fonte-q','of-fonte-chain','sim',this)">Sim</div>
+              <div class="radio-btn" onclick="fuChoose('fu-fonte-q','of-fonte-chain','nao',this)">Não</div>
+            </div>
+          </div>
+          <div class="outro-field" id="of-fonte-chain">
+            <div class="input-x-wrap">
+              <input type="text" placeholder="Fonte extra..." oninput="onOutroType(this,'of-fonte-chain')">
+              <button class="input-x-btn" type="button" onclick="clearChainBox('of-fonte-chain','fu-fonte-q')" title="Remover">✕</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTILO -->
+      <div class="field">
+        <label>Estilo Desejado</label>
+        <div class="checkbox-group" id="estilo">
+          <label class="checkbox-item"><input type="checkbox" value="Moderno"><span>Moderno</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Minimalista"><span>Minimalista</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Corporativo"><span>Corporativo</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Premium"><span>Premium</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Criativo"><span>Criativo</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-estilo',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-estilo">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Descreva o estilo..." oninput="onOutroType(this,'of-estilo')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-estilo','estilo')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGO -->
+      <div class="field">
+        <label>Logo disponível?</label>
+        <div class="chip-group" id="chips-logo">
+          <div class="chip" onclick="pickChip('chips-logo','Sim','of-logo',null)" data-of="of-logo">Sim</div>
+          <div class="chip" onclick="pickChip('chips-logo','Não',null,null)">Não</div>
+        </div>
+        <input type="hidden" id="logo" value="">
+        <div class="outro-field" id="of-logo">
+          <textarea id="logo_links" placeholder="Cole aqui os links da logo (PNG, SVG, Google Drive...)" style="min-height:70px"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Imagens Obrigatórias</label>
+        <textarea id="imagens" placeholder="Descreva imagens essenciais que precisam estar na página..."></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(4)">← Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(6)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 6 -->
+  <div class="step-card" id="step-6">
+    <div class="card-header">
+      <div class="step-icon">6</div>
+      <div class="card-header-text">
+        <h2>CTA, Formulário e SEO</h2>
+        <p>Call to action, campos do formulário e palavras-chave.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>CTA Principal</label>
+        <input type="text" id="cta" placeholder="Ex: Falar no WhatsApp, Comprar agora...">
+      </div>
+      <!-- CTA DESTINO SYSTEM -->
+      <div id="cta-slots-wrap"></div>
+      <!-- Campos do formulário (shown when Formulário is selected) -->
+      <div class="field" id="campos-form-field" style="display:none;margin-top:20px">
+        <label>Campos do Formulário</label>
+        <div class="checkbox-group" id="campos-form">
+          <label class="checkbox-item"><input type="checkbox" value="Nome"><span>Nome</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="E-mail"><span>E-mail</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="WhatsApp"><span>WhatsApp</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-campos',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-campos">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Quais campos extras?" oninput="onOutroType(this,'of-campos')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-campos','campos-form')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="field" id="integracao-field" style="display:none">
+        <label>Integração do Formulário</label>
+        <div class="checkbox-group" id="integracao">
+          <label class="checkbox-item" id="integ-email-item">
+            <input type="checkbox" value="E-mail" onchange="onIntegCheck('E-mail',this)">
+            <span>E-mail</span>
+          </label>
+          <div class="outro-field" id="of-integ-email" style="margin-top:0;margin-bottom:2px">
+            <input type="email" id="integ_email_val" placeholder="email@exemplo.com">
+          </div>
+          <label class="checkbox-item" id="integ-crm-item">
+            <input type="checkbox" value="CRM" onchange="onIntegCheck('CRM',this)">
+            <span>CRM</span>
+          </label>
+          <div class="outro-field" id="of-integ-crm" style="margin-top:0;margin-bottom:2px">
+            <input type="url" id="integ_crm_val" placeholder="https://link-do-crm.com...">
+          </div>
+          <label class="checkbox-item" id="integ-wa-item">
+            <input type="checkbox" value="WhatsApp" onchange="onIntegCheck('WhatsApp',this)">
+            <span>WhatsApp</span>
+          </label>
+          <div class="outro-field" id="of-integ-wa" style="margin-top:0;margin-bottom:2px">
+            <input type="text" id="integ_wa_val" placeholder="+55 (99) 99999-9999">
+          </div>
+          <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-integracao',this)"><span>Outro</span></label>
+        </div>
+        <div class="outro-field" id="of-integracao">
+          <div class="input-x-wrap">
+            <input type="text" placeholder="Qual integração?" oninput="onOutroType(this,'of-integracao')">
+            <button class="input-x-btn" type="button" onclick="clearOutroBox('of-integracao','integracao')" title="Remover">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:24px">
+        <label>Palavras-chave Principais (SEO)</label>
+        <textarea id="keywords" placeholder="Ex: consultoria de marketing digital São Paulo..." style="min-height:70px"></textarea>
+      </div>
+      <div class="field">
+        <label>Localização (se relevante)</label>
+        <input type="text" id="localizacao" placeholder="Ex: São Paulo, Zona Sul...">
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-ghost" onclick="goTo(5)">← Voltar</button>
+        <button class="btn btn-primary" onclick="goTo(7)">Continuar →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 7 -->
+  <div class="step-card" id="step-7">
+    <div class="card-header">
+      <div class="step-icon">7</div>
+      <div class="card-header-text">
+        <h2>Revisão e Envio</h2>
+        <p>Confira tudo antes de criar a tarefa no ClickUp.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box">
+        <span>✅</span>
+        <div>Ao clicar em <strong>Enviar Briefing</strong>, uma tarefa será criada automaticamente no <strong>ClickUp</strong> com todas as informações.</div>
+      </div>
+      <div id="review-content"></div>
+      <div class="field" style="margin-top:24px">
+        <label>Observações Finais</label>
+        <textarea id="obs" style="min-height:100px" placeholder="Qualquer detalhe extra importante..."></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn btn-warning" onclick="goTo(1)">✏️ Corrigir</button>
+        <button class="btn btn-primary" id="send-btn" onclick="sendBriefing()">📨 Enviar Briefing</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="success-screen">
+    <div class="success-icon">✓</div>
+    <h2>Tarefa criada com sucesso!</h2>
+    <p>O briefing foi enviado para o ClickUp e já está disponível para a equipe.</p>
+    <span class="success-tag">✅ ClickUp · Criação de Landing Page</span>
+    <br><br>
+    <button class="btn btn-ghost" onclick="resetForm()" style="margin:0 auto;display:inline-flex">Preencher novo briefing</button>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   CHAIN SYSTEM
+   Each .outro-field is a container. Inside it we render:
+   1. The first input-x-wrap (already in HTML)
+   2. After typing, a .fu-block appears (sim/não)
+   3. Sim → append a .chain-row with another input-x-wrap
+   4. Typing in that row → another .fu-block appears, etc.
+   ============================================================ */
+
+var TOTAL = 7, cur = 1;
+
+/* ---- progress ---- */
+function dots() {
+  var w = document.getElementById('progressDots'); w.innerHTML = '';
+  for (var i=1;i<=TOTAL;i++){var d=document.createElement('div');d.className='step-dot'+(i<cur?' done':i===cur?' active':'');w.appendChild(d);}
+  document.getElementById('progressLabel').textContent='Etapa '+cur+' de '+TOTAL;
+}
+dots();
+
+function goTo(n){
+  if(n>cur&&!validate(cur))return;
+  document.getElementById('step-'+cur).classList.remove('visible');
+  cur=n; if(cur===7)buildReview();
+  document.getElementById('step-'+cur).classList.add('visible');
+  dots(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function validate(s){if(s===1)return req('empresa');return true;}
+function req(id){var el=document.getElementById(id),f=document.getElementById('f-'+id);if(!el||!f)return true;if(!el.value.trim()){f.classList.add('has-error');return false;}f.classList.remove('has-error');return true;}
+
+/* ---- chip single-select ---- */
+function pickChip(groupId, val, showOfId, _unused) {
+  // highlight chip
+  document.querySelectorAll('#'+groupId+' .chip').forEach(function(c){ c.classList.remove('sel','sel-outro'); });
+  var chips = Array.from(document.querySelectorAll('#'+groupId+' .chip'));
+  var clicked = chips.find(function(c){ return c.textContent.trim()===val; });
+  if(clicked) clicked.classList.add(val==='Outro'?'sel-outro':'sel');
+  // store in hidden input
+  var hidden = clicked && clicked.closest('.field') && clicked.closest('.field').querySelector('input[type="hidden"]');
+  if(!hidden){ var grpEl=document.getElementById(groupId); if(grpEl){ var pf=grpEl.parentNode; hidden=pf?pf.querySelector('input[type="hidden"]'):null; } }
+  if(hidden) hidden.value = val;
+  // hide Outro outro-field if switching away
+  var outrChip = chips.find(function(c){ return c.textContent.trim()==='Outro'; });
+  if(outrChip && val!=='Outro'){
+    var outrOfId = outrChip.getAttribute('data-of');
+    if(outrOfId){ var box=document.getElementById(outrOfId); if(box){box.classList.remove('visible');resetOutroField(box);} }
+  }
+  // hide Sim outro-field if switching away from Sim
+  var simChip = chips.find(function(c){ return c.textContent.trim()==='Sim'; });
+  if(simChip && val!=='Sim'){
+    var simOfId = simChip.getAttribute('data-of');
+    if(simOfId){ var sbox=document.getElementById(simOfId); if(sbox){sbox.classList.remove('visible');var sinp=sbox.querySelector('input,textarea');if(sinp)sinp.value='';} }
+  }
+  // show target outro field
+  if(showOfId) document.getElementById(showOfId).classList.add('visible');
+}
+
+function clearChipOutro(groupId, ofId) {
+  document.querySelectorAll('#'+groupId+' .chip').forEach(function(c){c.classList.remove('sel','sel-outro');});
+  var grpEl=document.getElementById(groupId);
+  if(grpEl){ var hidden=grpEl.parentNode?grpEl.parentNode.querySelector('input[type="hidden"]'):null; if(hidden)hidden.value=''; }
+  var box=document.getElementById(ofId);
+  if(box){box.classList.remove('visible');resetOutroField(box);}
+}
+
+/* ---- checkbox Outro ---- */
+function onCheckOutro(ofId,chk){
+  var box=document.getElementById(ofId);
+  box.classList.toggle('visible',chk.checked);
+  if(!chk.checked){resetOutroField(box);}
+}
+function clearOutroBox(ofId,groupId){
+  var chk=document.querySelector('#'+groupId+' input[value="Outro"]');
+  if(chk){chk.checked=false;chk.closest('.checkbox-item').classList.remove('checked');}
+  var box=document.getElementById(ofId); box.classList.remove('visible'); resetOutroField(box);
+}
+
+/* ---- reset an entire .outro-field container (remove chain rows, hide fu-blocks) ---- */
+function resetOutroField(box){
+  // clear first input
+  var firstInp=box.querySelector('.input-x-wrap input');
+  if(firstInp)firstInp.value='';
+  // remove all .chain-row elements
+  box.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
+  // hide all .fu-block elements
+  box.querySelectorAll('.fu-block').forEach(function(b){b.classList.remove('on');});
+}
+
+/* ---- when the user types in ANY input inside an .outro-field ---- */
+function onOutroType(inputEl, ofId){
+  var val = inputEl.value.trim();
+  // Find the fu-block that immediately follows this input's parent (.input-x-wrap or .chain-row)
+  var row = inputEl.closest('.input-x-wrap, .chain-row');
+  var fuBlock = row ? row.nextElementSibling : null;
+
+  if(val.length > 0){
+    // Show or create a fu-block after this row
+    if(!fuBlock || !fuBlock.classList.contains('fu-block')){
+      fuBlock = makeFuBlock(ofId);
+      if(row) row.parentNode.insertBefore(fuBlock, row.nextSibling);
+    }
+    fuBlock.classList.add('on');
+  } else {
+    // Empty: hide fu-block and remove everything after
+    if(fuBlock && fuBlock.classList.contains('fu-block')){
+      removeFrom(ofId, fuBlock);
+    }
+  }
+}
+
+/* ---- when user types in a secondary field (cores/tipografia) ---- */
+function onSecondaryType(inputEl, ofId){
+  var box = document.getElementById(ofId);
+  if(inputEl.value.trim().length > 0){
+    box.classList.add('visible');
+  } else {
+    box.classList.remove('visible');
+    // reset inner state
+    box.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
+    box.querySelectorAll('.fu-block').forEach(function(b){
+      b.classList.remove('on');
+      b.querySelectorAll('.radio-btn').forEach(function(rb){rb.classList.remove('sel');});
+    });
+    box.querySelectorAll('.outro-field').forEach(function(f){f.classList.remove('visible');});
+  }
+}
+
+/* ---- sim/não choice on a fu-block (for chains) ---- */
+function fuChoose(fuBlockId, chainOfId, choice, btnEl){
+  var fuBlock = document.getElementById(fuBlockId);
+  // highlight
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  btnEl.classList.add('sel');
+
+  if(choice === 'sim'){
+    document.getElementById(chainOfId).classList.add('visible');
+  } else {
+    // Não: hide chain and reset
+    var chainBox = document.getElementById(chainOfId);
+    chainBox.classList.remove('visible');
+    resetOutroField(chainBox);
+    // hide this fu-block too
+    fuBlock.classList.remove('on');
+    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  }
+}
+
+/* ---- sim/não on dynamically created fu-blocks ---- */
+function fuDynChoose(fuBlock, ofId, choice, btnEl){
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  btnEl.classList.add('sel');
+
+  if(choice === 'sim'){
+    // append a new chain-row after the fu-block
+    var row = makeChainRow(ofId);
+    fuBlock.parentNode.insertBefore(row, fuBlock.nextSibling);
+    fuBlock.classList.remove('on'); // hide question, new row is visible
+  } else {
+    // Não: remove everything after this fu-block and hide it
+    removeFrom(ofId, fuBlock);
+  }
+}
+
+/* ---- remove fuBlock and everything after it inside an .outro-field ---- */
+function removeFrom(ofId, fuBlock){
+  var box = document.getElementById(ofId);
+  if(!box) return;
+  var removing = false;
+  var children = Array.from(box.children);
+  children.forEach(function(child){
+    if(child === fuBlock){ removing = true; }
+    if(removing){
+      if(child.classList.contains('fu-block')){
+        child.classList.remove('on');
+        child.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+        // clear inputs inside
+        child.querySelectorAll('input').forEach(function(i){i.value='';});
+      }
+      if(child.classList.contains('chain-row')){
+        child.remove();
+      }
+    }
+  });
+  // also handle nested .outro-field inside (cores/tipografia)
+}
+
+/* ---- clear a static chain box (cores/tipografia extra) ---- */
+function clearChainBox(chainOfId, fuBlockId){
+  var chainBox = document.getElementById(chainOfId);
+  chainBox.classList.remove('visible');
+  resetOutroField(chainBox);
+  var fuBlock = document.getElementById(fuBlockId);
+  if(fuBlock){ fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');}); }
+}
+
+/* ---- create a fu-block element dynamically ---- */
+function makeFuBlock(ofId){
+  var div = document.createElement('div');
+  div.className = 'fu-block on';
+  div.innerHTML =
+    '<div class="fu-label">Deseja incluir mais algum?</div>'+
+    '<div class="radio-group">'+
+      '<div class="radio-btn" onclick="fuDynChoose(this.closest(\'.fu-block\'),\''+ofId+'\',\'sim\',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="fuDynChoose(this.closest(\'.fu-block\'),\''+ofId+'\',\'nao\',this)">Não</div>'+
+    '</div>';
+  return div;
+}
+
+/* ---- create a chain-row (new input row) ---- */
+function makeChainRow(ofId){
+  var row = document.createElement('div');
+  row.className = 'chain-row';
+  row.innerHTML =
+    '<div class="input-x-wrap">'+
+      '<input type="text" placeholder="Digite mais um..." oninput="onOutroType(this,\''+ofId+'\')">'+
+      '<button class="input-x-btn" type="button" onclick="removeChainRow(this,\''+ofId+'\')" title="Remover">✕</button>'+
+    '</div>';
+  return row;
+}
+
+/* ---- remove a chain-row and everything after it ---- */
+function removeChainRow(btn, ofId){
+  var row = btn.closest('.chain-row');
+  var box = document.getElementById(ofId);
+  var removing = false;
+  var toRemove = [];
+  Array.from(box.children).forEach(function(child){
+    if(child === row) removing = true;
+    if(removing) toRemove.push(child);
+  });
+  toRemove.forEach(function(child){
+    if(child.classList.contains('chain-row')){ child.remove(); }
+    else if(child.classList.contains('fu-block')){
+      child.classList.remove('on');
+      child.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+    }
+  });
+}
+
+/* ---- collect all values from an .outro-field container ---- */
+function getOutroValues(ofId){
+  var box = document.getElementById(ofId);
+  if(!box || !box.classList.contains('visible')) return [];
+  var vals = [];
+  box.querySelectorAll('input[type="text"]').forEach(function(inp){
+    if(inp.value.trim()) vals.push(inp.value.trim());
+  });
+  return vals;
+}
+
+/* ---- helpers ---- */
+function v(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():'';}
+function toggleSel(sel,val,ofId){document.getElementById(ofId).classList.toggle('visible',sel.value===val);}
+
+/* ================================================================
+   CTA SLOT SYSTEM
+   ctaSlots = [{dest, wa_num, wa_msg, checkout_url, outro_val}]
+   ================================================================ */
+var ctaSlots = [];
+var CTA_OPTIONS = ['WhatsApp','Checkout','Formulário','Outro'];
+
+function initCTA() {
+  ctaSlots = [];
+  renderCTASlots();
+}
+
+function renderCTASlots() {
+  var wrap = document.getElementById('cta-slots-wrap');
+  wrap.innerHTML = '';
+
+  // --- render each slot ---
+  ctaSlots.forEach(function(slot, idx) {
+    var div = document.createElement('div');
+    div.className = 'cta-slot field';
+    div.innerHTML = buildSlotHTML(slot, idx);
+    wrap.appendChild(div);
+  });
+
+  // --- render "Destino do CTA" chooser or "Adicionar outro CTA?" ---
+  if(ctaSlots.length === 0) {
+    // First slot: just show the chooser
+    wrap.appendChild(buildChooserBlock(-1));
+  } else if(ctaSlots.length >= 2) {
+    // Max 2 CTAs — show nothing more
+  } else {
+    // Show "Deseja adicionar outro CTA?"
+    var addBlock = document.createElement('div');
+    addBlock.className = 'add-cta-block';
+    addBlock.id = 'add-cta-block';
+    addBlock.innerHTML =
+      '<div class="fu-label">Deseja adicionar outro CTA?</div>'+
+      '<div class="radio-group">'+
+        '<div class="radio-btn" onclick="ctaAddYes(this)">Sim</div>'+
+        '<div class="radio-btn" onclick="ctaAddNo(this)">Não</div>'+
+      '</div>'+
+      '<div class="cta-extra-field" id="add-cta-extra">'+buildChooserInner()+'</div>';
+    wrap.appendChild(addBlock);
+  }
+
+  // Show/hide campos-form-field and integracao-field
+  var showForm = ctaSlots.some(function(s){ return s.dest==='Formulário'; });
+  document.getElementById('campos-form-field').style.display = showForm ? 'block' : 'none';
+  document.getElementById('integracao-field').style.display = showForm ? 'block' : 'none';
+}
+
+function buildSlotHTML(slot, idx) {
+  var label = 'Destino do CTA '+(ctaSlots.length > 1 ? (idx+1) : '');
+  var removeBtn = '<button class="cta-slot-remove" onclick="removeCtaSlot('+idx+')" title="Remover">✕ Remover</button>';
+  var html = '<div class="cta-slot-header"><span class="cta-slot-label">'+label+'</span>'+removeBtn+'</div>';
+
+  // show selected chip (non-interactive display)
+  html += '<div style="margin-bottom:10px"><span class="chip sel" style="cursor:default">'+escHtml(slot.dest)+'</span></div>';
+
+  if(slot.dest === 'WhatsApp') {
+    html +=
+      '<div style="margin-bottom:8px">'+
+        '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>'+
+        '<input type="text" value="'+escHtml(slot.wa_num||'')+'" placeholder="+55 (99) 99999-9999" oninput="ctaSlots['+idx+'].wa_num=this.value">'+
+      '</div>'+
+      '<div>'+
+        '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>'+
+        '<textarea placeholder="Ex: Olá, vim pelo site e tenho interesse em..." style="min-height:70px" oninput="ctaSlots['+idx+'].wa_msg=this.value">'+escHtml(slot.wa_msg||'')+'</textarea>'+
+      '</div>';
+  } else if(slot.dest === 'Checkout') {
+    html +=
+      '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Link do Checkout</label>'+
+      '<input type="url" value="'+escHtml(slot.checkout_url||'')+'" placeholder="https://pay.example.com/..." oninput="ctaSlots['+idx+'].checkout_url=this.value">';
+  } else if(slot.dest === 'Outro') {
+    html +=
+      '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Descreva o destino</label>'+
+      '<input type="text" value="'+escHtml(slot.outro_val||'')+'" placeholder="Descreva o destino..." oninput="ctaSlots['+idx+'].outro_val=this.value">';
+  }
+  // Formulário: no extra fields here (campos-form shown separately)
+  return html;
+}
+
+function buildChooserBlock(forIdx) {
+  var div = document.createElement('div');
+  div.className = 'field';
+  div.id = 'cta-chooser';
+  div.innerHTML = '<label>Destino do CTA</label>'+buildChooserInner();
+  return div;
+}
+
+function buildChooserInner() {
+  var usedDests = ctaSlots.map(function(s){ return s.dest; });
+  var html = '<div class="chip-group" id="chips-cta-new">';
+  CTA_OPTIONS.forEach(function(opt) {
+    var isUsed = usedDests.indexOf(opt) > -1;
+    if(isUsed) {
+      html += '<div class="chip locked-label">'+opt+' – Já selecionada</div>';
+    } else {
+      html += '<div class="chip" onclick="ctaPickDest(\''+opt+'\')">'+opt+'</div>';
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+function ctaPickDest(dest) {
+  ctaSlots.push({ dest: dest, wa_num: '+55 ', wa_msg: '', checkout_url: '', outro_val: '' });
+  renderCTASlots();
+  // scroll to newly added slot
+  setTimeout(function(){ var w=document.getElementById('cta-slots-wrap'); if(w) w.lastElementChild&&w.lastElementChild.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function removeCtaSlot(idx) {
+  ctaSlots.splice(idx, 1);
+  renderCTASlots();
+}
+
+function ctaAddYes(btn) {
+  var block = document.getElementById('add-cta-block');
+  block.querySelectorAll('.radio-btn').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  var extra = document.getElementById('add-cta-extra');
+  if(extra) { extra.classList.add('on'); extra.innerHTML = buildChooserInner(); }
+}
+
+function ctaAddNo(btn) {
+  var block = document.getElementById('add-cta-block');
+  block.querySelectorAll('.radio-btn').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+  var extra = document.getElementById('add-cta-extra');
+  if(extra) extra.classList.remove('on');
+  // hide the entire block after a brief moment so user sees the selection
+  setTimeout(function(){ if(block) block.style.display = 'none'; }, 300);
+}
+
+function vCtaSlots() {
+  if(ctaSlots.length === 0) return '—';
+  return ctaSlots.map(function(s, i) {
+    var parts = ['CTA '+(i+1)+': '+s.dest];
+    if(s.dest==='WhatsApp'){ if(s.wa_num) parts.push('Número: '+s.wa_num); if(s.wa_msg) parts.push('Mensagem: '+s.wa_msg); }
+    if(s.dest==='Checkout' && s.checkout_url) parts.push('Link: '+s.checkout_url);
+    if(s.dest==='Outro' && s.outro_val) parts.push('Destino: '+s.outro_val);
+    return parts.join(' | ');
+  }).join('\n');
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function vCores(){
+  var p=[];
+  if(v('cor_primaria'))p.push('Primária: '+v('cor_primaria'));
+  if(v('cor_secundaria'))p.push('Secundária: '+v('cor_secundaria'));
+  getOutroValues('of-cores-chain').forEach(function(cv){p.push('Extra: '+cv);});
+  return p.join(' | ')||'';
+}
+function vTipografia(){
+  var p=[];
+  if(v('fonte_primaria'))p.push('Primária: '+v('fonte_primaria'));
+  if(v('fonte_secundaria'))p.push('Secundária: '+v('fonte_secundaria'));
+  getOutroValues('of-fonte-chain').forEach(function(cv){p.push('Extra: '+cv);});
+  return p.join(' | ')||'';
+}
+
+function checkedPlus(gid, ofId){
+  var vals=Array.from(document.querySelectorAll('#'+gid+' input[type="checkbox"]:checked')).map(function(e){return e.value;});
+  // replace "Outro" with actual typed values
+  var idx=vals.indexOf('Outro');
+  if(idx>-1){
+    vals.splice(idx,1);
+    getOutroValues(ofId).forEach(function(ov){vals.push(ov);});
+  }
+  return vals.join(', ')||'Nenhum selecionado';
+}
+
+/* ---- Hero sub-panel ---- */
+function onHeroCheck(chk) {
+  var panel = document.getElementById('hero-panel');
+  panel.style.display = chk.checked ? 'block' : 'none';
+  if(chk.closest('.checkbox-item')) chk.closest('.checkbox-item').classList.toggle('checked', chk.checked);
+  if(!chk.checked) {
+    // reset all hero sub-items
+    document.querySelectorAll('#hero-items input[type="checkbox"]').forEach(function(c){
+      c.checked = false;
+      if(c.closest('.checkbox-item')) c.closest('.checkbox-item').classList.remove('checked');
+    });
+    ['video','imagem','headline','subheadline','outro'].forEach(function(k){
+      var box = document.getElementById('hero-of-'+k);
+      if(box){ box.classList.remove('visible'); var inp=box.querySelector('input,textarea'); if(inp)inp.value=''; }
+    });
+  }
+}
+
+function onHeroItemCheck(key, chk) {
+  var box = document.getElementById('hero-of-'+key);
+  if(box) {
+    box.classList.toggle('visible', chk.checked);
+    if(!chk.checked){ var inp=box.querySelector('input,textarea'); if(inp)inp.value=''; }
+  }
+  if(chk.closest('.checkbox-item')) chk.closest('.checkbox-item').classList.toggle('checked', chk.checked);
+}
+
+function vHeroDetails() {
+  var lines = [];
+  var map = [
+    {key:'video',     label:'Vídeo (VSL)',    id:'hero_video_url'},
+    {key:'imagem',    label:'Imagem',          id:'hero_imagem_links'},
+    {key:'headline',  label:'Headline',        id:'hero_headline_val'},
+    {key:'subheadline',label:'Subheadline',   id:'hero_subheadline_val'},
+    {key:'outro',     label:'Outro',           id:'hero_outro_val'},
+  ];
+  map.forEach(function(m){
+    var chk = document.querySelector('#hero-items input[value="'+m.label+'"]');
+    if(chk && chk.checked){
+      var el = document.getElementById(m.id);
+      var val = el ? el.value.trim() : '';
+      lines.push('  • '+m.label+(val?' – '+val:''));
+    }
+  });
+  return lines.length ? '\n'+lines.join('\n') : '';
+}
+
+/* ---- integração checkbox with sub-fields ---- */
+function onIntegCheck(type, chk) {
+  var map = {'E-mail':'of-integ-email','CRM':'of-integ-crm','WhatsApp':'of-integ-wa'};
+  var ofId = map[type];
+  var box = ofId ? document.getElementById(ofId) : null;
+  if(box) {
+    box.classList.toggle('visible', chk.checked);
+    if(!chk.checked) { var inp=box.querySelector('input'); if(inp) inp.value=''; }
+  }
+  if(chk.closest('.checkbox-item')) chk.closest('.checkbox-item').classList.toggle('checked', chk.checked);
+}
+function vIntegracao() {
+  var parts=[];
+  var emailChk=document.querySelector('#integracao input[value="E-mail"]');
+  if(emailChk&&emailChk.checked){var v1=(document.getElementById('integ_email_val')||{}).value||'';parts.push('E-mail'+(v1.trim()?' – '+v1.trim():''));}
+  var crmChk=document.querySelector('#integracao input[value="CRM"]');
+  if(crmChk&&crmChk.checked){var v2=(document.getElementById('integ_crm_val')||{}).value||'';parts.push('CRM'+(v2.trim()?' – '+v2.trim():''));}
+  var waChk=document.querySelector('#integracao input[value="WhatsApp"]');
+  if(waChk&&waChk.checked){var v3=(document.getElementById('integ_wa_val')||{}).value||'';parts.push('WhatsApp'+(v3.trim()?' – '+v3.trim():''));}
+  getOutroValues('of-integracao').forEach(function(ov){parts.push(ov);});
+  return parts.join(', ')||'Nenhum selecionado';
+}
+
+function vHidden(id){var e=document.getElementById(id);return e&&e.value.trim()?e.value.trim():'';}
+function vConciencia(){var val=vHidden('consciencia');if(val==='Outro')return v('consciencia_outro')||'Outro';return val;}
+function vSite(){var val=vHidden('tem_site');if(val==='Sim')return 'Sim – '+(v('url_site')||'URL não informada');return val||'';}
+function vLogo(){var val=vHidden('logo');if(val==='Sim')return 'Sim'+(v('logo_links')?' – '+v('logo_links'):'');return val;}
+function escHtmlFull(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+/* ---- review ---- */
+function buildReview(){
+  var sections=[
+    {title:'Informações Gerais',rows:[
+      ['Empresa / Projeto',v('empresa')],['Produto / Serviço',v('produto')],
+      ['Tipo de Página',checkedPlus('tipo-pagina','of-tipo')],
+      ['Objetivo',v('objetivo')],['Possui site',vSite()]]},
+    {title:'Público-Alvo',rows:[
+      ['Público',v('publico')],['Nível de consciência',vConciencia()],
+      ['Dores',v('dores')],['Desejos',v('desejos')],['Objeções',v('objecoes')]]},
+    {title:'Proposta de Valor',rows:[
+      ['Oferta',v('oferta')],['Diferencial',v('diferencial')],
+      ['Antes',v('transformacao_antes')],['Depois',v('transformacao_depois')],['Big Idea',v('big_idea')]]},
+    {title:'Estrutura e Copy',rows:[
+      ['Seções', (function(){
+        var base = checkedPlus('secoes','of-secoes');
+        var heroChk = document.querySelector('#secoes input[value="Hero (acima da dobra)"]');
+        if(heroChk && heroChk.checked){ var det=vHeroDetails(); if(det) base += det; }
+        return base;
+      })()],
+      ['Tom de voz',checkedPlus('tom','of-tom')],
+      ['Gatilhos',checkedPlus('gatilhos','of-gatilhos')],
+      ['Mensagens obrigatórias',v('mensagens')]]},
+    {title:'Design e Visual',rows:[
+      ['Referências',v('referencias')],['Cores',vCores()],['Tipografia',vTipografia()],
+      ['Estilo',checkedPlus('estilo','of-estilo')],['Logo',vLogo()],['Imagens',v('imagens')]]},
+    {title:'CTA, Formulário e SEO',rows:[
+      ['CTA principal',v('cta')],
+      ['Destino(s) do CTA',vCtaSlots()],
+      ['Campos formulário',checkedPlus('campos-form','of-campos')],
+      ['Integração',ctaSlots.some(function(s){return s.dest==='Formulário';})?vIntegracao():'—'],
+      ['Palavras-chave',v('keywords')],['Localização',v('localizacao')]]}
+  ];
+  var html='';
+  sections.forEach(function(sec){
+    html+='<div class="review-section"><div class="review-section-title">'+sec.title+'</div>';
+    sec.rows.forEach(function(row){
+      var empty=!row[1]||row[1]==='Nenhum selecionado';
+      html+='<div class="review-row"><span class="review-label">'+row[0]+'</span><span class="review-value'+(empty?' empty':'')+'">'+( empty?'Não preenchido':escHtmlFull(row[1]))+'</span></div>';
+    });
+    html+='</div>';
+  });
+  document.getElementById('review-content').innerHTML=html;
+}
+
+/* ---- description ---- */
+function buildDescription(){
+  return [
+    '📋 BRIEFING – CRIAÇÃO DE LANDING PAGE','',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','1. INFORMAÇÕES GERAIS','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🏢 Empresa: '+(v('empresa')||'—'),
+    '📦 Produto: '+(v('produto')||'—'),
+    '📄 Tipo: '+checkedPlus('tipo-pagina','of-tipo'),
+    '🎯 Objetivo: '+(v('objetivo')||'—'),
+    '🌐 Site: '+(vSite()||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','2. PÚBLICO-ALVO','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '👥 Público: '+(v('publico')||'—'),
+    '🧠 Consciência: '+(vConciencia()||'—'),
+    '😣 Dores: '+(v('dores')||'—'),
+    '✨ Desejos: '+(v('desejos')||'—'),
+    '🚧 Objeções: '+(v('objecoes')||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','3. PROPOSTA DE VALOR','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '💎 Oferta: '+(v('oferta')||'—'),
+    '🏆 Diferencial: '+(v('diferencial')||'—'),
+    '🔄 Antes: '+(v('transformacao_antes')||'—'),
+    '✅ Depois: '+(v('transformacao_depois')||'—'),
+    '💡 Big Idea: '+(v('big_idea')||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','4. ESTRUTURA E COPY','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🗂 Seções: '+(function(){
+      var base=checkedPlus('secoes','of-secoes');
+      var heroChk=document.querySelector('#secoes input[value="Hero (acima da dobra)"]');
+      if(heroChk&&heroChk.checked){var det=vHeroDetails();if(det)base+=det;}
+      return base;
+    })(),
+    '🗣 Tom: '+checkedPlus('tom','of-tom'),
+    '⚡ Gatilhos: '+checkedPlus('gatilhos','of-gatilhos'),
+    '📌 Mensagens: '+(v('mensagens')||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','5. DESIGN E VISUAL','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🔗 Referências: '+(v('referencias')||'—'),
+    '🎨 Cores: '+(vCores()||'—'),
+    '✏️ Tipografia: '+(vTipografia()||'—'),
+    '🖼 Estilo: '+checkedPlus('estilo','of-estilo'),
+    '📎 Logo: '+(vLogo()||'—'),
+    '📸 Imagens: '+(v('imagens')||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','6. CTA, FORMULÁRIO E SEO','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🔘 CTA: '+(v('cta')||'—'),
+    '➡️ Destino(s):\n'+vCtaSlots(),
+    '📋 Campos: '+checkedPlus('campos-form','of-campos'),
+    '🔗 Integração: '+(ctaSlots.some(function(s){return s.dest==='Formulário';})?vIntegracao():'—'),
+    '🔍 Keywords: '+(v('keywords')||'—'),
+    '📍 Localização: '+(v('localizacao')||'—'),'',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━','7. OBSERVAÇÕES','━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    (v('obs')||'—'),
+  ].join('\n');
+}
+
+/* ---- send ---- */
+function showSuccess(){
+  document.getElementById('step-7').classList.remove('visible');
+  document.getElementById('success-screen').style.display='block';
+  document.querySelector('.progress-bar-wrap').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function sendBriefing(){
+  var btn=document.getElementById('send-btn');
+  btn.disabled=true; btn.textContent='Criando tarefa...';
+  fetch('https://api.clickup.com/api/v2/list/168911847/task',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'pk_82190021_FZZNRDO4APOZJXCDQ4MODUHF8S62PPP1'},
+    body:JSON.stringify({name:(v('empresa')||'Sem nome')+' | Criação de Landing Page',description:buildDescription(),assignees:[82190021]})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.id){showSuccess();}else{throw new Error(JSON.stringify(d));}
+  }).catch(function(err){
+    alert('Erro ao criar tarefa.\n\n'+err);
+    btn.disabled=false; btn.innerHTML='📨 Enviar Briefing';
+  });
+}
+
+function resetForm(){
+  document.querySelectorAll('input[type="text"],input[type="url"],input[type="email"],textarea,select').forEach(function(el){el.value='';});
+  document.querySelectorAll('input[type="hidden"]').forEach(function(el){el.value='';});
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(el){el.checked=false;});
+  document.querySelectorAll('.checkbox-item').forEach(function(i){i.classList.remove('checked');});
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('sel','sel-outro');});
+  document.querySelectorAll('.outro-field').forEach(function(f){f.classList.remove('visible');});
+  document.querySelectorAll('.fu-block').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  document.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
+  document.getElementById('hero-panel').style.display='none';
+  document.querySelectorAll('#hero-items input[type="checkbox"]').forEach(function(c){c.checked=false;if(c.closest('.checkbox-item'))c.closest('.checkbox-item').classList.remove('checked');});
+  ['video','imagem','headline','subheadline','outro'].forEach(function(k){var b=document.getElementById('hero-of-'+k);if(b){b.classList.remove('visible');var i=b.querySelector('input,textarea');if(i)i.value='';}});
+  ['of-integ-email','of-integ-crm','of-integ-wa'].forEach(function(id){
+    var b=document.getElementById(id); if(b){b.classList.remove('visible');var i=b.querySelector('input');if(i)i.value='';}
+  });
+  ctaSlots = []; initCTA();
+  document.getElementById('success-screen').style.display='none';
+  document.querySelector('.progress-bar-wrap').style.display='block';
+  cur=1; document.querySelectorAll('.step-card').forEach(function(c){c.classList.remove('visible');});
+  document.getElementById('step-1').classList.add('visible');
+  dots(); window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---- checkbox style sync ---- */
+document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(function(chk){
+  chk.addEventListener('change',function(){chk.closest('.checkbox-item').classList.toggle('checked',chk.checked);});
+});
+document.getElementById('empresa').addEventListener('input',function(){document.getElementById('f-empresa').classList.remove('has-error');});
+
+// Init CTA system on load
+initCTA();
+</script>
+</body>
+</html>
