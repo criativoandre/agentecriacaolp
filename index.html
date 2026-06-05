@@ -9,7 +9,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --navy:#0f1e35;--blue:#2563eb;--blue-light:#dbeafe;
+  --navy:#0d1e3a;--blue:#4a8fff;--blue-light:#deeaff;
   --surface:#f8f9fc;--border:#e2e8f0;
   --text:#1e293b;--text-muted:#64748b;--white:#ffffff;
   --success:#059669;--success-light:#d1fae5;--error:#dc2626;
@@ -18,10 +18,10 @@
 }
 body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;line-height:1.6}
 .hero{background:var(--navy);padding:52px 24px 52px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 110%,rgba(37,99,235,.35) 0%,transparent 70%);pointer-events:none}
-.hero-badge{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#93c5fd;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:99px;margin-bottom:20px}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 110%,rgba(74,143,255,.35) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#a8c8ff;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 16px;border-radius:99px;margin-bottom:20px}
 .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(26px,5vw,46px);color:#fff;line-height:1.15;margin-bottom:14px}
-.hero h1 em{font-style:italic;color:#93c5fd}
+.hero h1 em{font-style:italic;color:#a8c8ff}
 .hero p{color:rgba(255,255,255,.6);font-size:15px;max-width:480px;margin:0 auto}
 .progress-bar-wrap{background:var(--white);border-bottom:1px solid var(--border);padding:13px 24px}
 .progress-inner{max-width:800px;margin:0 auto;display:flex;align-items:center;gap:16px}
@@ -44,7 +44,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--text
 label{display:block;font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px}
 label .req{color:var(--blue);margin-left:3px}
 input[type="text"],input[type="url"],input[type="email"],select,textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,143,255,.12)}
 textarea{resize:vertical;min-height:90px;line-height:1.55}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .outro-field{display:none;margin-top:10px}
@@ -60,8 +60,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .fu-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
 .radio-group{display:flex;gap:10px}
 .radio-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:13px;user-select:none;transition:background .15s,border-color .15s}
-.radio-btn:hover{background:#eff6ff;border-color:#bfdbfe}
-.radio-btn.sel{background:#eff6ff;border-color:var(--blue);color:var(--blue);font-weight:600}
+.radio-btn:hover{background:#eef5ff;border-color:#b8d4ff}
+.radio-btn.sel{background:#eef5ff;border-color:var(--blue);color:var(--blue);font-weight:600}
 /* chain rows appended inside .outro-field */
 .chain-row{margin-top:10px}
 /* sub-fields for cores/tipografia */
@@ -73,18 +73,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .checkbox-item:hover{background:var(--surface);border-color:#c7d2fe}
 .checkbox-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);flex-shrink:0}
 .checkbox-item span{font-size:13.5px}
-.checkbox-item.checked{background:#eff6ff;border-color:#bfdbfe}
+.checkbox-item.checked{background:#eef5ff;border-color:#b8d4ff}
 .nav-buttons{display:flex;gap:12px;margin-top:28px;justify-content:flex-end}
 .btn{padding:11px 24px;border-radius:var(--radius);font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:8px}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-muted)}
 .btn-ghost:hover{background:var(--surface);color:var(--text)}
-.btn-primary{background:var(--blue);color:#fff;box-shadow:0 1px 8px rgba(37,99,235,.25)}
-.btn-primary:hover{background:#1d4ed8}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 1px 8px rgba(74,143,255,.25)}
+.btn-primary:hover{background:#3e79d8}
 .btn-primary:active{transform:scale(.98)}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-warning{background:#fff;color:#b45309;border:1px solid #fcd34d}
 .btn-warning:hover{background:#fef3c7}
-.info-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius);padding:14px 16px;font-size:13px;color:#1e40af;margin-bottom:24px;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.info-box{background:#eef5ff;border:1px solid #b8d4ff;border-radius:var(--radius);padding:14px 16px;font-size:13px;color:#1a5cc7;margin-bottom:24px;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
 .error-msg{color:var(--error);font-size:12px;margin-top:4px;display:none}
 .field.has-error input,.field.has-error textarea,.field.has-error select{border-color:var(--error)}
 .field.has-error .error-msg{display:block}
@@ -107,7 +107,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .chip{padding:8px 18px;border:1px solid var(--border);border-radius:99px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--white);color:var(--text-muted);transition:all .15s;user-select:none;font-weight:500}
 .chip:hover{border-color:var(--blue);color:var(--blue)}
 .chip.sel{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
-.chip.sel-outro{background:#eff6ff;border-color:var(--blue);color:var(--blue);font-weight:600}
+.chip.sel-outro{background:#eef5ff;border-color:var(--blue);color:var(--blue);font-weight:600}
 /* CTA slot system */
 .cta-slot{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
 .cta-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -127,7 +127,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .priority-item input[type="radio"]{display:none}
 .priority-flag{font-size:18px;line-height:1;flex-shrink:0}
 .priority-label{font-size:13.5px;font-weight:500}
-.priority-item.sel{background:#eff6ff;border-color:var(--blue)}
+.priority-item.sel{background:#eef5ff;border-color:var(--blue)}
 .wa-error{color:var(--error);font-size:11px;margin-top:3px;display:none}
 .wa-error.on{display:block}
 </style>
@@ -312,7 +312,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="checkbox-group" id="secoes">
           <label class="checkbox-item"><input type="checkbox" value="Hero (acima da dobra)" onchange="onHeroCheck(this)"><span>Hero (acima da dobra)</span></label>
           <!-- HERO SUB-PANEL — appears right below Hero option -->
-          <div id="hero-panel" style="display:none;margin:4px 0 8px 0;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius)">
+          <div id="hero-panel" style="display:none;margin:4px 0 8px 0;padding:14px 16px;background:#eef5ff;border:1px solid #b8d4ff;border-radius:var(--radius)">
             <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:10px">O que deseja incluir no Hero?</div>
             <div class="checkbox-group" id="hero-items">
               <label class="checkbox-item"><input type="checkbox" value="Vídeo (VSL)" onchange="onHeroItemCheck('video',this)"><span>Vídeo (VSL)</span></label>
