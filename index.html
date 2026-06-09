@@ -322,11 +322,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
               <label class="checkbox-item"><input type="checkbox" value="Imagem" onchange="onHeroItemCheck('imagem',this)"><span>Imagem</span></label>
               <div class="outro-field" id="hero-of-imagem"><textarea id="hero_imagem_links" placeholder="Cole os links das imagens..." style="min-height:70px"></textarea></div>
               <label class="checkbox-item"><input type="checkbox" value="Headline" onchange="onHeroItemCheck('headline',this)"><span>Headline</span></label>
-              <div class="outro-field" id="hero-of-headline"><input type="text" id="hero_headline_val" placeholder="Digite a headline do hero..."></div>
+              <div class="outro-field" id="hero-of-headline"><textarea id="hero_headline_val" placeholder="Digite a headline do hero..." style="min-height:70px"></textarea></div>
               <label class="checkbox-item"><input type="checkbox" value="Subheadline" onchange="onHeroItemCheck('subheadline',this)"><span>Subheadline</span></label>
-              <div class="outro-field" id="hero-of-subheadline"><input type="text" id="hero_subheadline_val" placeholder="Digite a subheadline do hero..."></div>
+              <div class="outro-field" id="hero-of-subheadline"><textarea id="hero_subheadline_val" placeholder="Digite a subheadline do hero..." style="min-height:70px"></textarea></div>
               <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onHeroItemCheck('outro',this)"><span>Outro</span></label>
-              <div class="outro-field" id="hero-of-outro"><input type="text" id="hero_outro_val" placeholder="Descreva o elemento..."></div>
+              <div class="outro-field" id="hero-of-outro"><textarea id="hero_outro_val" placeholder="Descreva o elemento..." style="min-height:70px"></textarea></div>
             </div>
           </div>
           <label class="checkbox-item"><input type="checkbox" value="Prova social"><span>Prova social</span></label>
@@ -685,7 +685,47 @@ function goTo(n){
   document.getElementById('step-'+cur).classList.add('visible');
   dots(); window.scrollTo({top:0,behavior:'smooth'});
 }
-function validate(s){if(s===1)return req('empresa');return true;}
+function validate(s){
+  if(s===1) return req('empresa');
+  if(s===6) return validateStep6();
+  return true;
+}
+function validateStep6(){
+  var ok = true;
+  // Check e-mail in integração
+  var emailInp = document.getElementById('integ_email_val');
+  if(emailInp && emailInp.closest('.outro-field') && emailInp.closest('.outro-field').classList.contains('visible')){
+    var re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if(emailInp.value.trim() && !re.test(emailInp.value.trim())){
+      validateEmailField(emailInp);
+      ok = false;
+    }
+  }
+  // Check WA in integração
+  var waInp = document.getElementById('integ_wa_val');
+  if(waInp && waInp.closest('.outro-field') && waInp.closest('.outro-field').classList.contains('visible')){
+    var digits = waInp.value.replace(/\D/g,'');
+    if(digits.length > 0 && digits.length !== 11){
+      validateWAField(waInp);
+      ok = false;
+    }
+  }
+  // Check WA numbers inside CTA slots
+  ctaSlots.forEach(function(slot, idx){
+    if(slot.dest === 'WhatsApp'){
+      var slotWa = document.querySelector('#cta-slots-wrap .cta-slot:nth-child('+(idx+1)+') input[type="tel"]');
+      if(slotWa){
+        var d = slotWa.value.replace(/\D/g,'');
+        if(d.length > 0 && d.length !== 11){
+          validateWAField(slotWa);
+          ok = false;
+        }
+      }
+    }
+  });
+  if(!ok) alert('Corrija os campos com erro antes de continuar.');
+  return ok;
+}
 function req(id){var el=document.getElementById(id),f=document.getElementById('f-'+id);if(!el||!f)return true;if(!el.value.trim()){f.classList.add('has-error');return false;}f.classList.remove('has-error');return true;}
 
 /* ---- chip single-select ---- */
@@ -768,21 +808,31 @@ function onOutroType(inputEl, ofId){
   }
 }
 
+/* ---- typing in a cor/fonte extra chain-row — no generic fu-block needed ---- */
+function onCorExtraType(inputEl, ofId){
+  // nothing to do: chainSim already appended the "Deseja adicionar mais?" fu-block
+  // we only need to suppress the generic onOutroType behavior
+}
+
 /* ---- when user types in a secondary field (cores/tipografia) ---- */
 function onSecondaryType(inputEl, ofId){
   var box = document.getElementById(ofId);
   if(inputEl.value.trim().length > 0){
     box.classList.add('visible');
-    // make sure the original fu-block is visible and reset
+    // Only show the static fu-block if it still exists in DOM (not removed by chainSim)
     var origFu = box.querySelector('.fu-block:not(.chain-fu)');
-    if(origFu){ origFu.style.display = ''; origFu.classList.add('on'); origFu.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');}); }
+    if(origFu && !origFu.classList.contains('chain-fu')){
+      origFu.style.display = '';
+      origFu.classList.add('on');
+      origFu.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+    }
   } else {
     box.classList.remove('visible');
-    // reset inner state: remove all chain-rows and dynamic chain-fu blocks
+    // remove all chain-rows and dynamic chain-fu blocks
     box.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
     box.querySelectorAll('.chain-fu').forEach(function(b){b.remove();});
-    // restore original fu-block
-    box.querySelectorAll('.fu-block').forEach(function(b){
+    // restore any surviving static fu-block
+    box.querySelectorAll('.fu-block:not(.chain-fu)').forEach(function(b){
       b.style.display = '';
       b.classList.add('on');
       b.querySelectorAll('.radio-btn').forEach(function(rb){rb.classList.remove('sel');});
@@ -865,30 +915,25 @@ function clearChainBox(chainOfId, fuBlockId){
 function chainSim(ofId, fuBlockId, placeholder, kind, btnEl){
   var container = document.getElementById(ofId);
   var fuBlock = document.getElementById(fuBlockId);
-  // mark button selected
-  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
-  btnEl.classList.add('sel');
-  // hide the question block
-  fuBlock.classList.remove('on');
-  fuBlock.style.display = 'none';
-  // create new input row + "x" button + next question
+  // Remove from DOM entirely — prevents double block when onSecondaryType re-runs
+  fuBlock.parentNode.removeChild(fuBlock);
   var row = document.createElement('div');
   row.className = 'chain-row';
   row.setAttribute('data-kind', kind);
+  row.setAttribute('data-fuid', fuBlockId);
   row.innerHTML =
     '<div class="input-x-wrap">'+
-      '<input type="text" placeholder="'+placeholder+'" oninput="onOutroType(this,''+ofId+'')">'+
-      '<button class="input-x-btn" type="button" onclick="chainRemoveRow(this,''+ofId+'',''+fuBlockId+'',''+placeholder+'',''+kind+'')" title="Remover">✕</button>'+
+      '<input type="text" placeholder="'+placeholder+'" oninput="onCorExtraType(this,\''+ofId+'\')" >'+
+      '<button class="input-x-btn" type="button" onclick="chainRemoveRow(this,\''+ofId+'\',\''+fuBlockId+'\',\''+placeholder+'\',\''+kind+'\')" title="Remover">✕</button>'+
     '</div>';
-  // next "Deseja adicionar mais?" block
   var label = kind === 'cor' ? 'Deseja adicionar mais alguma cor extra?' : 'Deseja adicionar mais alguma tipografia?';
   var nextFu = document.createElement('div');
   nextFu.className = 'fu-block on chain-fu';
   nextFu.innerHTML =
     '<div class="fu-label">'+label+'</div>'+
     '<div class="radio-group">'+
-      '<div class="radio-btn" onclick="chainSimDyn(''+ofId+'',''+placeholder+'',''+kind+'',this)">Sim</div>'+
-      '<div class="radio-btn" onclick="chainNaoDyn(this.closest('.chain-fu'))">Não</div>'+
+      '<div class="radio-btn" onclick="chainSimDyn(\''+ofId+'\',\''+placeholder+'\',\''+kind+'\',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="chainNaoDyn(this.closest(\'.chain-fu\'))">Não</div>'+
     '</div>';
   container.appendChild(row);
   container.appendChild(nextFu);
@@ -917,8 +962,8 @@ function chainSimDyn(ofId, placeholder, kind, btnEl){
   row.setAttribute('data-kind', kind);
   row.innerHTML =
     '<div class="input-x-wrap">'+
-      '<input type="text" placeholder="'+placeholder+'" oninput="onOutroType(this,''+ofId+'')">'+
-      '<button class="input-x-btn" type="button" onclick="chainRemoveDynRow(this,''+ofId+'',''+placeholder+'',''+kind+'')" title="Remover">✕</button>'+
+      '<input type="text" placeholder="'+placeholder+'" oninput="onCorExtraType(this,\''+ofId+'\')" >'+
+      '<button class="input-x-btn" type="button" onclick="chainRemoveDynRow(this,\''+ofId+'\',\''+placeholder+'\',\''+kind+'\')" title="Remover">✕</button>'+
     '</div>';
   var label = kind === 'cor' ? 'Deseja adicionar mais alguma cor extra?' : 'Deseja adicionar mais alguma tipografia?';
   var nextFu = document.createElement('div');
@@ -926,10 +971,9 @@ function chainSimDyn(ofId, placeholder, kind, btnEl){
   nextFu.innerHTML =
     '<div class="fu-label">'+label+'</div>'+
     '<div class="radio-group">'+
-      '<div class="radio-btn" onclick="chainSimDyn(''+ofId+'',''+placeholder+'',''+kind+'',this)">Sim</div>'+
-      '<div class="radio-btn" onclick="chainNaoDyn(this.closest('.chain-fu'))">Não</div>'+
+      '<div class="radio-btn" onclick="chainSimDyn(\''+ofId+'\',\''+placeholder+'\',\''+kind+'\',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="chainNaoDyn(this.closest(\'.chain-fu\'))">Não</div>'+
     '</div>';
-  // insert before next sibling or append
   var nextEl = fuBlock.nextSibling;
   if(nextEl){ container.insertBefore(row, nextEl); container.insertBefore(nextFu, row.nextSibling); }
   else { container.appendChild(row); container.appendChild(nextFu); }
@@ -953,15 +997,21 @@ function chainRemoveRow(btn, ofId, fuBlockId, placeholder, kind){
     if(child === row) removing = true;
     if(removing && (child.classList.contains('chain-row') || child.classList.contains('chain-fu'))) toRemove.push(child);
   });
+  toRemove.push(row);
   toRemove.forEach(function(el){ el.remove(); });
-  // restore original fu-block
-  var fuBlock = document.getElementById(fuBlockId);
-  if(fuBlock){
-    fuBlock.style.display = '';
-    fuBlock.classList.add('on');
-    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
-  }
-  // hide container if empty
+  // Rebuild and re-insert the original fu-block (it was removed from DOM by chainSim)
+  var label = kind === 'cor' ? 'Deseja adicionar mais alguma cor extra?' : 'Deseja adicionar mais alguma tipografia?';
+  var newFu = document.createElement('div');
+  newFu.id = fuBlockId;
+  newFu.className = 'fu-block on';
+  newFu.innerHTML =
+    '<div class="fu-label">'+label+'</div>'+
+    '<div class="radio-group">'+
+      '<div class="radio-btn" onclick="chainSim(\''+ofId+'\',\''+fuBlockId+'\',\''+placeholder+'\',\''+kind+'\',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="chainNao(\''+fuBlockId+'\')">Não</div>'+
+    '</div>';
+  container.appendChild(newFu);
+  // hide container if no more extra rows
   if(!container.querySelector('.chain-row')) container.classList.remove('visible');
 }
 
@@ -1021,7 +1071,7 @@ function makeChainRow(ofId){
   return row;
 }
 
-/* ---- remove a chain-row and everything after it ---- */
+/* ---- remove a chain-row (dynamic "Outro" entry) and everything after it ---- */
 function removeChainRow(btn, ofId){
   var row = btn.closest('.chain-row');
   var box = document.getElementById(ofId);
@@ -1032,11 +1082,7 @@ function removeChainRow(btn, ofId){
     if(removing) toRemove.push(child);
   });
   toRemove.forEach(function(child){
-    if(child.classList.contains('chain-row')){ child.remove(); }
-    else if(child.classList.contains('fu-block')){
-      child.classList.remove('on');
-      child.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
-    }
+    child.remove();
   });
 }
 
