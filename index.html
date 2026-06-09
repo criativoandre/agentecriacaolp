@@ -65,9 +65,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* chain rows appended inside .outro-field */
 .chain-row{margin-top:10px}
 /* sub-fields for cores/tipografia */
-.sub-fields{margin-top:10px;display:flex;flex-direction:column;gap:10px}
+.sub-fields{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media(max-width:560px){.field-row{grid-template-columns:1fr}}
+@media(max-width:560px){.field-row{grid-template-columns:1fr}.sub-fields{grid-template-columns:1fr}}
 .checkbox-group{display:flex;flex-direction:column;gap:8px}
 .checkbox-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:background .15s,border-color .15s;user-select:none}
 .checkbox-item:hover{background:var(--surface);border-color:#c7d2fe}
@@ -102,6 +102,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 #success-screen h2{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);margin-bottom:12px}
 #success-screen p{color:var(--text-muted);font-size:14px;max-width:420px;margin:0 auto 8px}
 .success-tag{display:inline-block;margin-top:12px;padding:8px 20px;background:var(--success-light);color:var(--success);border-radius:99px;font-size:13px;font-weight:600}
+.add-item-btn{margin-top:8px;padding:7px 14px;background:var(--blue-light);color:var(--blue);border:1px dashed var(--blue);border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.add-item-btn:hover{background:#d0e4ff}
+.item-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.item-row input{flex:1;margin:0}
+.item-row-remove{width:28px;height:28px;border-radius:50%;background:#e2e8f0;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#64748b;transition:background .15s,color .15s;flex-shrink:0}
+.item-row-remove:hover{background:#fecaca;color:#dc2626}
 /* single-select chip group */
 .chip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
 .chip{padding:8px 18px;border:1px solid var(--border);border-radius:99px;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;background:var(--white);color:var(--text-muted);transition:all .15s;user-select:none;font-weight:500}
@@ -416,17 +422,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <!-- CORES -->
       <div class="field">
         <label>Cores Principais</label>
-        <div class="sub-fields">
+        <div class="sub-fields" id="cores-primarios">
           <input type="text" id="cor_primaria" placeholder="Cores Primárias – Ex: #1A3A5C, azul marinho...">
-          <input type="text" id="cor_secundaria" placeholder="Cores Secundárias – Ex: #E8A020, dourado..." oninput="onSecondaryType(this,'of-cores-extra')">
+          <input type="text" id="cor_secundaria" placeholder="Cores Secundárias – Ex: #E8A020, dourado..." oninput="onSecundarioType(this,'cores')">
+          <div id="cores-extras" style="display:contents"></div>
         </div>
-        <div class="outro-field" id="of-cores-extra">
-          <div class="fu-block on" id="fu-cores-q">
-            <div class="fu-label">Deseja adicionar mais alguma cor extra?</div>
-            <div class="radio-group">
-              <div class="radio-btn" onclick="chainSim('of-cores-extra','fu-cores-q','Cor extra...','cor',this)">Sim</div>
-              <div class="radio-btn" onclick="chainNao('fu-cores-q')">Não</div>
-            </div>
+        <div class="fu-block" id="fu-cores-q" style="margin-top:10px">
+          <div class="fu-label">Deseja adicionar mais alguma cor extra?</div>
+          <div class="radio-group">
+            <div class="radio-btn" onclick="extraSim('cores','Cor extra... Ex: #34A853',this)">Sim</div>
+            <div class="radio-btn" onclick="extraNao('cores',this)">Não</div>
           </div>
         </div>
       </div>
@@ -434,17 +439,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <!-- TIPOGRAFIA -->
       <div class="field">
         <label>Tipografia</label>
-        <div class="sub-fields">
+        <div class="sub-fields" id="fontes-primarios">
           <input type="text" id="fonte_primaria" placeholder="Fonte Primária – Ex: Montserrat, Inter...">
-          <input type="text" id="fonte_secundaria" placeholder="Fonte Secundária – Ex: Lato, Open Sans..." oninput="onSecondaryType(this,'of-fonte-extra')">
+          <input type="text" id="fonte_secundaria" placeholder="Fonte Secundária – Ex: Lato, Open Sans..." oninput="onSecundarioType(this,'fontes')">
+          <div id="fontes-extras" style="display:contents"></div>
         </div>
-        <div class="outro-field" id="of-fonte-extra">
-          <div class="fu-block on" id="fu-fonte-q">
-            <div class="fu-label">Deseja adicionar mais alguma tipografia?</div>
-            <div class="radio-group">
-              <div class="radio-btn" onclick="chainSim('of-fonte-extra','fu-fonte-q','Fonte extra...','fonte',this)">Sim</div>
-              <div class="radio-btn" onclick="chainNao('fu-fonte-q')">Não</div>
-            </div>
+        <div class="fu-block" id="fu-fontes-q" style="margin-top:10px">
+          <div class="fu-label">Deseja adicionar mais alguma tipografia?</div>
+          <div class="radio-group">
+            <div class="radio-btn" onclick="extraSim('fontes','Fonte extra... Ex: Roboto',this)">Sim</div>
+            <div class="radio-btn" onclick="extraNao('fontes',this)">Não</div>
           </div>
         </div>
       </div>
@@ -1250,20 +1254,101 @@ function vCtaSlots() {
 
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+/* ── Cores & Tipografia: dedicated extra-field system ─────────────────────────
+   Each group has a fixed pair of inputs + a div for extras + a fu-block question.
+   extraSim: add an input-x-wrap row, reset buttons, ask again.
+   extraNao: mark Não, hide fu-block.
+   extraRemove: remove a row, show fu-block again.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+function onSecundarioType(inp, group){
+  var fuBlock = document.getElementById('fu-'+group+'-q');
+  var list    = document.getElementById(group+'-extras');
+  if(inp.value.trim().length > 0){
+    // Show question only if no extra rows already added
+    if(!list || list.children.length === 0){
+      fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+      fuBlock.classList.add('on');
+    }
+  } else {
+    // Cleared: hide question and remove any extras
+    fuBlock.classList.remove('on');
+    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+    if(list) list.innerHTML = '';
+  }
+}
+
+function extraSim(group, placeholder, btnEl){
+  var fuBlock = document.getElementById('fu-'+group+'-q');
+  var list    = document.getElementById(group+'-extras');
+
+  // Hide the question block immediately
+  fuBlock.classList.remove('on');
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+
+  // Create new input row with ✕
+  var row = document.createElement('div');
+  row.className = 'input-x-wrap';
+  var inp = document.createElement('input');
+  inp.type = 'text';
+  inp.placeholder = placeholder;
+  inp.style.paddingRight = '36px';
+  // Only show question again once the user starts typing in this field
+  inp.addEventListener('input', function(){
+    if(inp.value.trim().length > 0){
+      fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+      fuBlock.classList.add('on');
+    } else {
+      fuBlock.classList.remove('on');
+    }
+  });
+  var xBtn = document.createElement('button');
+  xBtn.type = 'button';
+  xBtn.className = 'input-x-btn';
+  xBtn.title = 'Remover';
+  xBtn.innerHTML = '✕';
+  xBtn.onclick = function(){ row.remove(); showExtraQuestion(group); };
+  row.appendChild(inp);
+  row.appendChild(xBtn);
+  list.appendChild(row);
+}
+
+function extraNao(group, btnEl){
+  var fuBlock = document.getElementById('fu-'+group+'-q');
+  fuBlock.classList.remove('on');
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+}
+
+function showExtraQuestion(group){
+  var fuBlock = document.getElementById('fu-'+group+'-q');
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  fuBlock.classList.add('on');
+}
+
+function resetExtras(group){
+  var listEl = document.getElementById(group+'-extras');
+  if(listEl) listEl.innerHTML = '';
+  var fuBlock = document.getElementById('fu-'+group+'-q');
+  if(fuBlock){
+    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+    fuBlock.classList.remove('on');
+  }
+}
+
 function vCores(){
   var p=[];
-  if(v('cor_primaria'))p.push('Primária: '+v('cor_primaria'));
+  if(v('cor_primaria'))  p.push('Primária: '+v('cor_primaria'));
   if(v('cor_secundaria'))p.push('Secundária: '+v('cor_secundaria'));
-  var ext=document.getElementById('of-cores-extra');
-  if(ext){ ext.querySelectorAll('.chain-row input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
+  var ext=document.getElementById('cores-extras');
+  if(ext){ ext.querySelectorAll('input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
   return p.join(' | ')||'';
 }
 function vTipografia(){
   var p=[];
-  if(v('fonte_primaria'))p.push('Primária: '+v('fonte_primaria'));
+  if(v('fonte_primaria'))  p.push('Primária: '+v('fonte_primaria'));
   if(v('fonte_secundaria'))p.push('Secundária: '+v('fonte_secundaria'));
-  var ext=document.getElementById('of-fonte-extra');
-  if(ext){ ext.querySelectorAll('.chain-row input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
+  var ext=document.getElementById('fontes-extras');
+  if(ext){ ext.querySelectorAll('input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
   return p.join(' | ')||'';
 }
 
@@ -1626,11 +1711,10 @@ function resetForm(){
   document.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
   document.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
   document.querySelectorAll('.chain-fu').forEach(function(b){b.remove();});
-  // restore original fu-blocks that may have been hidden by chainSim
-  ['fu-cores-q','fu-fonte-q'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el){el.style.display='';el.classList.add('on');el.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});}
-  });
+  // reset extras for cores and tipografia
+  resetExtras('cores');
+  resetExtras('fontes');
+  ['cor_primaria','cor_secundaria','fonte_primaria','fonte_secundaria'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('hero-panel').style.display='none';
   document.querySelectorAll('#hero-items input[type="checkbox"]').forEach(function(c){c.checked=false;if(c.closest('.checkbox-item'))c.closest('.checkbox-item').classList.remove('checked');});
   ['video','imagem','headline','subheadline','outro'].forEach(function(k){var b=document.getElementById('hero-of-'+k);if(b){b.classList.remove('visible');var i=b.querySelector('input,textarea');if(i)i.value='';}});
