@@ -130,6 +130,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .priority-item.sel{background:#eef5ff;border-color:var(--blue)}
 .wa-error{color:var(--error);font-size:11px;margin-top:3px;display:none}
 .wa-error.on{display:block}
+.field-error-msg{color:var(--error);font-size:11px;margin-top:4px;display:none}
+.field-error-msg.on{display:block}
 </style>
 </head>
 <body>
@@ -422,14 +424,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <div class="fu-block on" id="fu-cores-q">
             <div class="fu-label">Deseja adicionar mais alguma cor extra?</div>
             <div class="radio-group">
-              <div class="radio-btn" onclick="fuChoose('fu-cores-q','of-cores-chain','sim',this)">Sim</div>
-              <div class="radio-btn" onclick="fuChoose('fu-cores-q','of-cores-chain','nao',this)">Não</div>
-            </div>
-          </div>
-          <div class="outro-field" id="of-cores-chain">
-            <div class="input-x-wrap">
-              <input type="text" placeholder="Cor extra..." oninput="onOutroType(this,'of-cores-chain')">
-              <button class="input-x-btn" type="button" onclick="clearChainBox('of-cores-chain','fu-cores-q')" title="Remover">✕</button>
+              <div class="radio-btn" onclick="chainSim('of-cores-extra','fu-cores-q','Cor extra...','cor',this)">Sim</div>
+              <div class="radio-btn" onclick="chainNao('fu-cores-q')">Não</div>
             </div>
           </div>
         </div>
@@ -446,14 +442,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <div class="fu-block on" id="fu-fonte-q">
             <div class="fu-label">Deseja adicionar mais alguma tipografia?</div>
             <div class="radio-group">
-              <div class="radio-btn" onclick="fuChoose('fu-fonte-q','of-fonte-chain','sim',this)">Sim</div>
-              <div class="radio-btn" onclick="fuChoose('fu-fonte-q','of-fonte-chain','nao',this)">Não</div>
-            </div>
-          </div>
-          <div class="outro-field" id="of-fonte-chain">
-            <div class="input-x-wrap">
-              <input type="text" placeholder="Fonte extra..." oninput="onOutroType(this,'of-fonte-chain')">
-              <button class="input-x-btn" type="button" onclick="clearChainBox('of-fonte-chain','fu-fonte-q')" title="Remover">✕</button>
+              <div class="radio-btn" onclick="chainSim('of-fonte-extra','fu-fonte-q','Fonte extra...','fonte',this)">Sim</div>
+              <div class="radio-btn" onclick="chainNao('fu-fonte-q')">Não</div>
             </div>
           </div>
         </div>
@@ -542,7 +532,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             <span>E-mail</span>
           </label>
           <div class="outro-field" id="of-integ-email" style="margin-top:0;margin-bottom:2px">
-            <input type="email" id="integ_email_val" placeholder="email@exemplo.com">
+            <input type="text" id="integ_email_val" placeholder="email@exemplo.com" oninput="validateEmailField(this)">
           </div>
           <label class="checkbox-item" id="integ-crm-item">
             <input type="checkbox" value="CRM" onchange="onIntegCheck('CRM',this)">
@@ -556,7 +546,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             <span>WhatsApp</span>
           </label>
           <div class="outro-field" id="of-integ-wa" style="margin-top:0;margin-bottom:2px">
-            <input type="text" id="integ_wa_val" placeholder="+55 (99) 99999-9999">
+            <input type="tel" id="integ_wa_val" placeholder="Ex: 11999998888" maxlength="11" oninput="blockNonDigits(this);validateWAField(this)" onkeypress="return onlyDigitsKey(event)">
           </div>
           <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-integracao',this)"><span>Outro</span></label>
         </div>
@@ -656,7 +646,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div id="success-screen">
     <div class="success-icon">✓</div>
     <h2>Tarefa criada com sucesso!</h2>
-    <p>A tarefa principal e as 7 subtarefas foram criadas no ClickUp e já estão disponíveis para a equipe.</p>
+    <p>A tarefa com o briefing completo foi criada no ClickUp e já está disponível para a equipe.</p>
     <span class="success-tag">✅ ClickUp · Criação de Landing Page</span>
     <br><br>
     <button class="btn btn-ghost" onclick="resetForm()" style="margin:0 auto;display:inline-flex">Preencher novo briefing</button>
@@ -783,12 +773,18 @@ function onSecondaryType(inputEl, ofId){
   var box = document.getElementById(ofId);
   if(inputEl.value.trim().length > 0){
     box.classList.add('visible');
+    // make sure the original fu-block is visible and reset
+    var origFu = box.querySelector('.fu-block:not(.chain-fu)');
+    if(origFu){ origFu.style.display = ''; origFu.classList.add('on'); origFu.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');}); }
   } else {
     box.classList.remove('visible');
-    // reset inner state
+    // reset inner state: remove all chain-rows and dynamic chain-fu blocks
     box.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
+    box.querySelectorAll('.chain-fu').forEach(function(b){b.remove();});
+    // restore original fu-block
     box.querySelectorAll('.fu-block').forEach(function(b){
-      b.classList.remove('on');
+      b.style.display = '';
+      b.classList.add('on');
       b.querySelectorAll('.radio-btn').forEach(function(rb){rb.classList.remove('sel');});
     });
     box.querySelectorAll('.outro-field').forEach(function(f){f.classList.remove('visible');});
@@ -861,6 +857,143 @@ function clearChainBox(chainOfId, fuBlockId){
   resetOutroField(chainBox);
   var fuBlock = document.getElementById(fuBlockId);
   if(fuBlock){ fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');}); }
+}
+
+/* ---- chain: Sim clicked on cores/tipografia question ---- */
+// ofId = container (.outro-field), fuBlockId = the question block,
+// placeholder = input placeholder, kind = 'cor'|'fonte'
+function chainSim(ofId, fuBlockId, placeholder, kind, btnEl){
+  var container = document.getElementById(ofId);
+  var fuBlock = document.getElementById(fuBlockId);
+  // mark button selected
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  btnEl.classList.add('sel');
+  // hide the question block
+  fuBlock.classList.remove('on');
+  fuBlock.style.display = 'none';
+  // create new input row + "x" button + next question
+  var row = document.createElement('div');
+  row.className = 'chain-row';
+  row.setAttribute('data-kind', kind);
+  row.innerHTML =
+    '<div class="input-x-wrap">'+
+      '<input type="text" placeholder="'+placeholder+'" oninput="onOutroType(this,''+ofId+'')">'+
+      '<button class="input-x-btn" type="button" onclick="chainRemoveRow(this,''+ofId+'',''+fuBlockId+'',''+placeholder+'',''+kind+'')" title="Remover">✕</button>'+
+    '</div>';
+  // next "Deseja adicionar mais?" block
+  var label = kind === 'cor' ? 'Deseja adicionar mais alguma cor extra?' : 'Deseja adicionar mais alguma tipografia?';
+  var nextFu = document.createElement('div');
+  nextFu.className = 'fu-block on chain-fu';
+  nextFu.innerHTML =
+    '<div class="fu-label">'+label+'</div>'+
+    '<div class="radio-group">'+
+      '<div class="radio-btn" onclick="chainSimDyn(''+ofId+'',''+placeholder+'',''+kind+'',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="chainNaoDyn(this.closest('.chain-fu'))">Não</div>'+
+    '</div>';
+  container.appendChild(row);
+  container.appendChild(nextFu);
+  container.classList.add('visible');
+}
+
+/* ---- chain: Não clicked on original question ---- */
+function chainNao(fuBlockId){
+  var fuBlock = document.getElementById(fuBlockId);
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  // mark Não (second button)
+  var btns = fuBlock.querySelectorAll('.radio-btn');
+  if(btns[1]) btns[1].classList.add('sel');
+}
+
+/* ---- chain: Sim clicked on a dynamic question ---- */
+function chainSimDyn(ofId, placeholder, kind, btnEl){
+  var container = document.getElementById(ofId);
+  var fuBlock = btnEl.closest('.chain-fu');
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  btnEl.classList.add('sel');
+  fuBlock.classList.remove('on');
+  fuBlock.style.display = 'none';
+  var row = document.createElement('div');
+  row.className = 'chain-row';
+  row.setAttribute('data-kind', kind);
+  row.innerHTML =
+    '<div class="input-x-wrap">'+
+      '<input type="text" placeholder="'+placeholder+'" oninput="onOutroType(this,''+ofId+'')">'+
+      '<button class="input-x-btn" type="button" onclick="chainRemoveDynRow(this,''+ofId+'',''+placeholder+'',''+kind+'')" title="Remover">✕</button>'+
+    '</div>';
+  var label = kind === 'cor' ? 'Deseja adicionar mais alguma cor extra?' : 'Deseja adicionar mais alguma tipografia?';
+  var nextFu = document.createElement('div');
+  nextFu.className = 'fu-block on chain-fu';
+  nextFu.innerHTML =
+    '<div class="fu-label">'+label+'</div>'+
+    '<div class="radio-group">'+
+      '<div class="radio-btn" onclick="chainSimDyn(''+ofId+'',''+placeholder+'',''+kind+'',this)">Sim</div>'+
+      '<div class="radio-btn" onclick="chainNaoDyn(this.closest('.chain-fu'))">Não</div>'+
+    '</div>';
+  // insert before next sibling or append
+  var nextEl = fuBlock.nextSibling;
+  if(nextEl){ container.insertBefore(row, nextEl); container.insertBefore(nextFu, row.nextSibling); }
+  else { container.appendChild(row); container.appendChild(nextFu); }
+}
+
+/* ---- chain: Não on a dynamic question ---- */
+function chainNaoDyn(fuBlock){
+  fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  var btns = fuBlock.querySelectorAll('.radio-btn');
+  if(btns[1]) btns[1].classList.add('sel');
+}
+
+/* ---- chain: X clicked on first extra row (restores original fu-block) ---- */
+function chainRemoveRow(btn, ofId, fuBlockId, placeholder, kind){
+  var container = document.getElementById(ofId);
+  var row = btn.closest('.chain-row');
+  // remove this row and everything after (chain-rows and chain-fu blocks)
+  var removing = false;
+  var toRemove = [];
+  Array.from(container.children).forEach(function(child){
+    if(child === row) removing = true;
+    if(removing && (child.classList.contains('chain-row') || child.classList.contains('chain-fu'))) toRemove.push(child);
+  });
+  toRemove.forEach(function(el){ el.remove(); });
+  // restore original fu-block
+  var fuBlock = document.getElementById(fuBlockId);
+  if(fuBlock){
+    fuBlock.style.display = '';
+    fuBlock.classList.add('on');
+    fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  }
+  // hide container if empty
+  if(!container.querySelector('.chain-row')) container.classList.remove('visible');
+}
+
+/* ---- chain: X clicked on a dynamic extra row ---- */
+function chainRemoveDynRow(btn, ofId, placeholder, kind){
+  var container = document.getElementById(ofId);
+  var row = btn.closest('.chain-row');
+  // find the chain-fu that follows this row
+  var removing = false;
+  var toRemove = [];
+  var prevFu = null; // the chain-fu that was hidden when this row was created
+  Array.from(container.children).forEach(function(child){
+    if(child === row){ removing = true; }
+    if(removing && (child.classList.contains('chain-row') || child.classList.contains('chain-fu'))) toRemove.push(child);
+    if(!removing && child.classList.contains('chain-fu') && child.style.display === 'none') prevFu = child;
+  });
+  toRemove.forEach(function(el){ el.remove(); });
+  // restore the previous fu-block (the one that was hidden when Sim was clicked)
+  if(prevFu){
+    prevFu.style.display = '';
+    prevFu.classList.add('on');
+    prevFu.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+  } else {
+    // no previous dynamic fu; restore original
+    // find the first fu-block (static) with display:none
+    var staticFu = container.querySelector('.fu-block[style*="display: none"], .fu-block[style*="display:none"]');
+    if(staticFu){
+      staticFu.style.display = '';
+      staticFu.classList.add('on');
+      staticFu.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
+    }
+  }
 }
 
 /* ---- create a fu-block element dynamically ---- */
@@ -985,7 +1118,7 @@ function buildSlotHTML(slot, idx) {
     html +=
       '<div style="margin-bottom:8px">'+
         '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>'+
-        '<input type="text" value="'+escHtml(slot.wa_num||'')+'" placeholder="+55 (99) 99999-9999" oninput="ctaSlots['+idx+'].wa_num=this.value;validateWA(this)">'+
+        '<input type="tel" value="'+escHtml(slot.wa_num||'')+'" placeholder="Ex: 11999998888" maxlength="11" oninput="blockNonDigits(this);ctaSlots['+idx+'].wa_num=this.value;validateWAField(this)" onkeypress="return onlyDigitsKey(event)">'+
       '<div class="wa-error"></div>'+
       '</div>'+
       '<div>'+
@@ -1075,14 +1208,16 @@ function vCores(){
   var p=[];
   if(v('cor_primaria'))p.push('Primária: '+v('cor_primaria'));
   if(v('cor_secundaria'))p.push('Secundária: '+v('cor_secundaria'));
-  getOutroValues('of-cores-chain').forEach(function(cv){p.push('Extra: '+cv);});
+  var ext=document.getElementById('of-cores-extra');
+  if(ext){ ext.querySelectorAll('.chain-row input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
   return p.join(' | ')||'';
 }
 function vTipografia(){
   var p=[];
   if(v('fonte_primaria'))p.push('Primária: '+v('fonte_primaria'));
   if(v('fonte_secundaria'))p.push('Secundária: '+v('fonte_secundaria'));
-  getOutroValues('of-fonte-chain').forEach(function(cv){p.push('Extra: '+cv);});
+  var ext=document.getElementById('of-fonte-extra');
+  if(ext){ ext.querySelectorAll('.chain-row input[type="text"]').forEach(function(inp){ if(inp.value.trim())p.push('Extra: '+inp.value.trim()); }); }
   return p.join(' | ')||'';
 }
 
@@ -1420,30 +1555,10 @@ function sendBriefing(){
     mainPayload.priority = priorityMapFinal[priorityVal];
   }
 
-  // 1. Create main task
+  // Create single task with full briefing in description
   clickupPost('https://api.clickup.com/api/v2/list/'+LIST_ID+'/task', mainPayload)
   .then(function(mainTask) {
     if(!mainTask.id) throw new Error(JSON.stringify(mainTask));
-
-    var parentId = mainTask.id;
-    var subtasks = buildSubtasks();
-
-    // 2. Create subtasks sequentially
-    return subtasks.reduce(function(chain, sub) {
-      return chain.then(function() {
-        var subPayload = {
-          name: sub.name,
-          description: sub.description,
-          assignees: ASSIGNEES,
-          parent: parentId
-        };
-        if(mainPayload.start_date) { subPayload.start_date = mainPayload.start_date; subPayload.start_date_time = false; }
-        if(mainPayload.priority) subPayload.priority = mainPayload.priority;
-        return clickupPost('https://api.clickup.com/api/v2/list/'+LIST_ID+'/task', subPayload);
-      });
-    }, Promise.resolve());
-  })
-  .then(function() {
     showSuccess();
   })
   .catch(function(err) {
@@ -1454,7 +1569,8 @@ function sendBriefing(){
 }
 
 function resetForm(){
-  document.querySelectorAll('input[type="text"],input[type="url"],input[type="email"],input[type="date"],textarea,select').forEach(function(el){el.value='';});
+  document.querySelectorAll('input[type="text"],input[type="tel"],input[type="url"],input[type="email"],input[type="date"],textarea,select').forEach(function(el){el.value='';el.style.borderColor='';});
+  document.querySelectorAll('.field-error-msg,.wa-error').forEach(function(e){e.classList.remove('on');});
   document.querySelectorAll('input[type="hidden"]').forEach(function(el){el.value='';});
   document.querySelectorAll('input[type="checkbox"]').forEach(function(el){el.checked=false;});
   document.querySelectorAll('.checkbox-item').forEach(function(i){i.classList.remove('checked');});
@@ -1463,6 +1579,12 @@ function resetForm(){
   document.querySelectorAll('.fu-block').forEach(function(b){b.classList.remove('on');});
   document.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
   document.querySelectorAll('.chain-row').forEach(function(r){r.remove();});
+  document.querySelectorAll('.chain-fu').forEach(function(b){b.remove();});
+  // restore original fu-blocks that may have been hidden by chainSim
+  ['fu-cores-q','fu-fonte-q'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.style.display='';el.classList.add('on');el.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});}
+  });
   document.getElementById('hero-panel').style.display='none';
   document.querySelectorAll('#hero-items input[type="checkbox"]').forEach(function(c){c.checked=false;if(c.closest('.checkbox-item'))c.closest('.checkbox-item').classList.remove('checked');});
   ['video','imagem','headline','subheadline','outro'].forEach(function(k){var b=document.getElementById('hero-of-'+k);if(b){b.classList.remove('visible');var i=b.querySelector('input,textarea');if(i)i.value='';}});
@@ -1479,32 +1601,56 @@ function resetForm(){
   dots(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ---- WhatsApp number validation (max 11 digits) ---- */
-function validateWA(inp) {
+/* ---- digit-only helpers ---- */
+function onlyDigitsKey(e){
+  return (e.key >= '0' && e.key <= '9') || e.key === 'Backspace' || e.key === 'Delete' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Tab';
+}
+function blockNonDigits(inp){
+  inp.value = inp.value.replace(/\D/g,'');
+}
+
+/* ---- WhatsApp field validation (exactly 11 digits) ---- */
+function validateWAField(inp){
   var digits = inp.value.replace(/\D/g,'');
-  var err = inp.parentNode.querySelector('.wa-error') || inp.nextElementSibling;
-  if(!err || !err.classList.contains('wa-error')) {
-    err = document.createElement('div');
-    err.className = 'wa-error';
-    err.textContent = 'Máximo 11 dígitos numéricos.';
-    inp.parentNode.insertBefore(err, inp.nextSibling);
-  }
-  if(digits.length > 11) {
-    err.classList.add('on');
+  inp.value = digits; // strip any non-digit that slipped through
+  var errEl = getOrCreateError(inp, 'Informe os 11 dígitos do WhatsApp (ex: 11999998888).');
+  if(digits.length > 0 && digits.length !== 11){
+    errEl.classList.add('on');
     inp.style.borderColor = 'var(--error)';
   } else {
-    err.classList.remove('on');
+    errEl.classList.remove('on');
     inp.style.borderColor = '';
   }
 }
 
-// attach validation to all WA number inputs after DOM ready
-document.addEventListener('DOMContentLoaded', function() {
-  ['integ_wa_val'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if(el) el.addEventListener('input', function(){ validateWA(this); });
-  });
-});
+/* ---- e-mail field validation ---- */
+function validateEmailField(inp){
+  var val = inp.value.trim();
+  var errEl = getOrCreateError(inp, 'Informe um e-mail válido (ex: email@dominio.com.br).');
+  var re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if(val.length > 0 && !re.test(val)){
+    errEl.classList.add('on');
+    inp.style.borderColor = 'var(--error)';
+  } else {
+    errEl.classList.remove('on');
+    inp.style.borderColor = '';
+  }
+}
+
+function getOrCreateError(inp, msg){
+  var wrap = inp.closest('.input-x-wrap') || inp.parentNode;
+  var errEl = wrap.querySelector('.field-error-msg');
+  if(!errEl){
+    errEl = document.createElement('div');
+    errEl.className = 'field-error-msg';
+    wrap.appendChild(errEl);
+  }
+  errEl.textContent = msg;
+  return errEl;
+}
+
+// keep old validateWA as alias for CTA slot usage
+function validateWA(inp){ validateWAField(inp); }
 document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(function(chk){
   chk.addEventListener('change',function(){chk.closest('.checkbox-item').classList.toggle('checked',chk.checked);});
 });
