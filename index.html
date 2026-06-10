@@ -46,6 +46,7 @@ label .req{color:var(--blue);margin-left:3px}
 input[type="text"],input[type="url"],input[type="email"],select,textarea{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,143,255,.12)}
 textarea{resize:vertical;min-height:90px;line-height:1.55}
+.wa-input{display:block}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 .outro-field{display:none;margin-top:10px}
 .outro-field.visible{display:block}
@@ -345,16 +346,62 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
               </div>
             </div>
           </div>
-          <label class="checkbox-item"><input type="checkbox" value="Prova social"><span>Prova social</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Prova social / Depoimentos" onchange="onSecaoExtra('prova-panel',this)"><span>Prova social / Depoimentos</span></label>
+          <div id="prova-panel" style="display:none;margin:4px 0 8px 0">
+            <textarea id="prova_links" placeholder="Cole links ou textos de depoimentos..." style="min-height:70px"></textarea>
+          </div>
           <label class="checkbox-item"><input type="checkbox" value="Problema / dor"><span>Problema / dor</span></label>
           <label class="checkbox-item"><input type="checkbox" value="Solução / método"><span>Solução / método</span></label>
           <label class="checkbox-item"><input type="checkbox" value="Benefícios"><span>Benefícios</span></label>
           <label class="checkbox-item"><input type="checkbox" value="Diferenciais"><span>Diferenciais</span></label>
-          <label class="checkbox-item"><input type="checkbox" value="Portfólio / exemplos"><span>Portfólio / exemplos</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Portfólio / exemplos" onchange="onSecaoExtra('portfolio-panel',this)"><span>Portfólio / exemplos</span></label>
+          <div id="portfolio-panel" style="display:none;margin:4px 0 8px 0">
+            <textarea id="portfolio_links" placeholder="Cole os links do portfólio / exemplos..." style="min-height:70px"></textarea>
+          </div>
           <label class="checkbox-item"><input type="checkbox" value="Como funciona"><span>Como funciona</span></label>
-          <label class="checkbox-item"><input type="checkbox" value="Oferta"><span>Oferta</span></label>
-          <label class="checkbox-item"><input type="checkbox" value="FAQ"><span>FAQ</span></label>
-          <label class="checkbox-item"><input type="checkbox" value="CTA final"><span>CTA final</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Oferta" onchange="onSecaoExtra('oferta-panel',this)"><span>Oferta</span></label>
+          <div id="oferta-panel" style="display:none;margin:4px 0 8px 0;padding:14px 16px;background:#f8f9fc;border:1px solid var(--border);border-radius:var(--radius)">
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Deseja incluir um botão CTA na Oferta?</div>
+            <div class="chip-group" id="oferta-chips" style="margin-bottom:12px">
+              <div class="chip" onclick="onOfertaChip('WhatsApp',this)">WhatsApp</div>
+              <div class="chip" onclick="onOfertaChip('Checkout',this)">Checkout</div>
+              <div class="chip" onclick="onOfertaChip('Nenhum',this)">Não incluir</div>
+            </div>
+            <div id="oferta-wa" style="display:none">
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>
+              <input type="tel" id="oferta_wa_num" placeholder="Ex: 11999998888" maxlength="11" class="wa-input" oninput="blockNonDigits(this);validateWAField(this)" onkeypress="return onlyDigitsKey(event)">
+              <div class="wa-error" style="margin-bottom:8px"></div>
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>
+              <textarea id="oferta_wa_msg" placeholder="Ex: Olá, vim pelo site e tenho interesse em..." style="min-height:70px"></textarea>
+            </div>
+            <div id="oferta-checkout" style="display:none">
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Link do Checkout</label>
+              <input type="url" id="oferta_checkout_url" placeholder="https://pay.example.com/...">
+            </div>
+          </div>
+          <label class="checkbox-item"><input type="checkbox" value="FAQ" onchange="onSecaoExtra('faq-panel',this)"><span>FAQ</span></label>
+          <div id="faq-panel" style="display:none;margin:4px 0 8px 0">
+            <textarea id="faq_content" placeholder="Escreva as perguntas e respostas do FAQ..." style="min-height:120px"></textarea>
+          </div>
+          <label class="checkbox-item"><input type="checkbox" value="CTA final" onchange="onSecaoExtra('cta-final-panel',this)"><span>CTA final</span></label>
+          <div id="cta-final-panel" style="display:none;margin:4px 0 8px 0;padding:14px 16px;background:#f8f9fc;border:1px solid var(--border);border-radius:var(--radius)">
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Destino do CTA final</div>
+            <div class="chip-group" id="cta-final-chips" style="margin-bottom:12px">
+              <div class="chip" onclick="onCtaFinalChip('WhatsApp',this)">WhatsApp</div>
+              <div class="chip" onclick="onCtaFinalChip('Checkout',this)">Checkout</div>
+            </div>
+            <div id="cta-final-wa" style="display:none">
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>
+              <input type="tel" id="cta_final_wa_num" placeholder="Ex: 11999998888" maxlength="11" class="wa-input" oninput="blockNonDigits(this);validateWAField(this)" onkeypress="return onlyDigitsKey(event)">
+              <div class="wa-error" style="margin-bottom:8px"></div>
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>
+              <textarea id="cta_final_wa_msg" placeholder="Ex: Olá, vim pelo site e tenho interesse em..." style="min-height:70px"></textarea>
+            </div>
+            <div id="cta-final-checkout" style="display:none">
+              <label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Link do Checkout</label>
+              <input type="url" id="cta_final_checkout_url" placeholder="https://pay.example.com/...">
+            </div>
+          </div>
           <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-secoes',this)"><span>Outro</span></label>
         </div>
         <div class="outro-field" id="of-secoes">
@@ -560,7 +607,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             <span>WhatsApp</span>
           </label>
           <div class="outro-field" id="of-integ-wa" style="margin-top:0;margin-bottom:2px">
-            <input type="tel" id="integ_wa_val" placeholder="Ex: 11999998888" maxlength="11" oninput="blockNonDigits(this);validateWAField(this)" onkeypress="return onlyDigitsKey(event)">
+            <input type="tel" id="integ_wa_val" placeholder="Ex: 11999998888" maxlength="11" class="wa-input" oninput="blockNonDigits(this);validateWAField(this)" onkeypress="return onlyDigitsKey(event)">
           </div>
           <label class="checkbox-item"><input type="checkbox" value="Outro" onchange="onCheckOutro('of-integracao',this)"><span>Outro</span></label>
         </div>
@@ -1176,15 +1223,11 @@ function buildSlotHTML(slot, idx) {
 
   if(slot.dest === 'WhatsApp') {
     html +=
-      '<div style="margin-bottom:8px">'+
-        '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>'+
-        '<input type="tel" value="'+escHtml(slot.wa_num||'')+'" placeholder="Ex: 11999998888" maxlength="11" oninput="blockNonDigits(this);ctaSlots['+idx+'].wa_num=this.value;validateWAField(this)" onkeypress="return onlyDigitsKey(event)">'+
-      '<div class="wa-error"></div>'+
-      '</div>'+
-      '<div>'+
-        '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>'+
-        '<textarea placeholder="Ex: Olá, vim pelo site e tenho interesse em..." style="min-height:70px" oninput="ctaSlots['+idx+'].wa_msg=this.value">'+escHtml(slot.wa_msg||'')+'</textarea>'+
-      '</div>';
+      '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Número do WhatsApp</label>'+
+      '<input type="tel" value="'+escHtml(slot.wa_num||'')+'" placeholder="Ex: 11999998888" maxlength="11" class="wa-input" oninput="blockNonDigits(this);ctaSlots['+idx+'].wa_num=this.value;validateWAField(this)" onkeypress="return onlyDigitsKey(event)">'+
+      '<div class="wa-error" style="margin-bottom:8px"></div>'+
+      '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Mensagem Pré-preenchida</label>'+
+      '<textarea placeholder="Ex: Olá, vim pelo site e tenho interesse em..." style="min-height:70px" oninput="ctaSlots['+idx+'].wa_msg=this.value">'+escHtml(slot.wa_msg||'')+'</textarea>';
   } else if(slot.dest === 'Checkout') {
     html +=
       '<label style="font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block">Link do Checkout</label>'+
@@ -1222,7 +1265,7 @@ function buildChooserInner() {
 }
 
 function ctaPickDest(dest) {
-  ctaSlots.push({ dest: dest, wa_num: '+55 ', wa_msg: '', checkout_url: '', outro_val: '' });
+  ctaSlots.push({ dest: dest, wa_num: '', wa_msg: '', checkout_url: '', outro_val: '' });
   renderCTASlots();
   // scroll to newly added slot
   setTimeout(function(){ var w=document.getElementById('cta-slots-wrap'); if(w) w.lastElementChild&&w.lastElementChild.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
@@ -1272,16 +1315,21 @@ function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
    ─────────────────────────────────────────────────────────────────────────── */
 
 function onSecundarioType(inp, group){
-  var fuBlock = document.getElementById('fu-'+group+'-q');
-  var list    = document.getElementById(group+'-extras');
-  if(inp.value.trim().length > 0){
-    // Show question only if no extra rows already added
+  var fuBlock  = document.getElementById('fu-'+group+'-q');
+  var list     = document.getElementById(group+'-extras');
+  var primId   = group === 'cores' ? 'cor_primaria' : 'fonte_primaria';
+  var primEl   = document.getElementById(primId);
+  var primFilled = primEl && primEl.value.trim().length > 0;
+  var secFilled  = inp.value.trim().length > 0;
+
+  if(primFilled && secFilled){
+    // Both filled: show question only if no extras already added
     if(!list || list.children.length === 0){
       fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
       fuBlock.classList.add('on');
     }
   } else {
-    // Cleared: hide question and remove any extras
+    // Either field cleared: hide question and remove extras
     fuBlock.classList.remove('on');
     fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
     if(list) list.innerHTML = '';
@@ -1343,6 +1391,40 @@ function resetExtras(group){
     fuBlock.querySelectorAll('.radio-btn').forEach(function(b){b.classList.remove('sel');});
     fuBlock.classList.remove('on');
   }
+}
+
+function vOfertaDetails(){
+  var sel = document.querySelector('#oferta-chips .chip.sel');
+  if(!sel || sel.textContent.trim()==='Não incluir') return '';
+  var dest = sel.textContent.trim();
+  var out = '\n  • CTA da Oferta: '+dest;
+  if(dest === 'WhatsApp'){
+    var num = document.getElementById('oferta_wa_num');
+    var msg = document.getElementById('oferta_wa_msg');
+    if(num&&num.value.trim()) out += '\n    Número: '+num.value.trim();
+    if(msg&&msg.value.trim()) out += '\n    Mensagem: '+msg.value.trim();
+  } else if(dest === 'Checkout'){
+    var url = document.getElementById('oferta_checkout_url');
+    if(url&&url.value.trim()) out += '\n    Link: '+url.value.trim();
+  }
+  return out;
+}
+
+function vCtaFinalDetails(){
+  var sel = document.querySelector('#cta-final-chips .chip.sel');
+  if(!sel) return '';
+  var dest = sel.textContent.trim();
+  var out = '\n  • CTA final destino: '+dest;
+  if(dest === 'WhatsApp'){
+    var num = document.getElementById('cta_final_wa_num');
+    var msg = document.getElementById('cta_final_wa_msg');
+    if(num&&num.value.trim()) out += '\n    Número: '+num.value.trim();
+    if(msg&&msg.value.trim()) out += '\n    Mensagem: '+msg.value.trim();
+  } else if(dest === 'Checkout'){
+    var url = document.getElementById('cta_final_checkout_url');
+    if(url&&url.value.trim()) out += '\n    Link: '+url.value.trim();
+  }
+  return out;
 }
 
 function vCores(){
@@ -1542,6 +1624,16 @@ function buildDescription(){
       var base=checkedPlus('secoes','of-secoes');
       var heroChk=document.querySelector('#secoes input[value="Hero (acima da dobra)"]');
       if(heroChk&&heroChk.checked){var det=vHeroDetails();if(det)base+=det;}
+      var provaChk=document.querySelector('#secoes input[value="Prova social / Depoimentos"]');
+      if(provaChk&&provaChk.checked){var pv=document.getElementById('prova_links');if(pv&&pv.value.trim())base+='\n  • Depoimentos: '+pv.value.trim();}
+      var portChk=document.querySelector('#secoes input[value="Portf\u00f3lio / exemplos"]');
+      if(portChk&&portChk.checked){var pl=document.getElementById('portfolio_links');if(pl&&pl.value.trim())base+='\n  • Links: '+pl.value.trim();}
+      var ofertaChk=document.querySelector('#secoes input[value="Oferta"]');
+      if(ofertaChk&&ofertaChk.checked){base+=vOfertaDetails();}
+      var faqChk=document.querySelector('#secoes input[value="FAQ"]');
+      if(faqChk&&faqChk.checked){var fq=document.getElementById('faq_content');if(fq&&fq.value.trim())base+='\n  • FAQ: '+fq.value.trim();}
+      var ctaChk=document.querySelector('#secoes input[value="CTA final"]');
+      if(ctaChk&&ctaChk.checked){base+=vCtaFinalDetails();}
       return base;
     })(),
     '🗣 Tom: '+checkedPlus('tom','of-tom'),
@@ -1726,6 +1818,16 @@ function resetForm(){
   resetExtras('fontes');
   ['cor_primaria','cor_secundaria','fonte_primaria','fonte_secundaria'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('hero-panel').style.display='none';
+  document.getElementById('portfolio-panel').style.display='none';
+  document.getElementById('prova-panel').style.display='none';
+  document.getElementById('oferta-panel').style.display='none';
+  document.getElementById('faq-panel').style.display='none';
+  document.getElementById('cta-final-panel').style.display='none';
+  document.querySelectorAll('#cta-final-chips .chip, #oferta-chips .chip').forEach(function(c){c.classList.remove('sel');});
+  document.getElementById('cta-final-wa').style.display='none';
+  document.getElementById('cta-final-checkout').style.display='none';
+  document.getElementById('oferta-wa').style.display='none';
+  document.getElementById('oferta-checkout').style.display='none';
   document.querySelectorAll('#hero-items input[type="checkbox"]').forEach(function(c){c.checked=false;if(c.closest('.checkbox-item'))c.closest('.checkbox-item').classList.remove('checked');});
   ['video','imagem','headline','subheadline','outro'].forEach(function(k){var b=document.getElementById('hero-of-'+k);if(b){b.classList.remove('visible');var i=b.querySelector('input,textarea');if(i)i.value='';}});
   ['of-integ-email','of-integ-crm','of-integ-wa'].forEach(function(id){
@@ -1798,6 +1900,59 @@ document.getElementById('empresa').addEventListener('input',function(){document.
 
 // Init CTA system on load
 initCTA();
+/* ---- Seções extras: Portfólio, Prova social, Oferta, FAQ e CTA final ---- */
+function onSecaoExtra(panelId, chk){
+  var panel = document.getElementById(panelId);
+  if(!panel) return;
+  panel.style.display = chk.checked ? 'block' : 'none';
+  if(chk.closest('.checkbox-item')) chk.closest('.checkbox-item').classList.toggle('checked', chk.checked);
+  if(!chk.checked){
+    // reset panel contents
+    panel.querySelectorAll('input,textarea').forEach(function(el){el.value='';});
+    if(panelId === 'cta-final-panel'){
+      document.querySelectorAll('#cta-final-chips .chip').forEach(function(c){c.classList.remove('sel');});
+      document.getElementById('cta-final-wa').style.display = 'none';
+      document.getElementById('cta-final-checkout').style.display = 'none';
+    }
+    if(panelId === 'oferta-panel'){
+      document.querySelectorAll('#oferta-chips .chip').forEach(function(c){c.classList.remove('sel');});
+      document.getElementById('oferta-wa').style.display = 'none';
+      document.getElementById('oferta-checkout').style.display = 'none';
+    }
+  }
+}
+
+function onOfertaChip(dest, chipEl){
+  document.querySelectorAll('#oferta-chips .chip').forEach(function(c){c.classList.remove('sel');});
+  chipEl.classList.add('sel');
+  document.getElementById('oferta-wa').style.display       = dest === 'WhatsApp' ? 'block' : 'none';
+  document.getElementById('oferta-checkout').style.display = dest === 'Checkout'  ? 'block' : 'none';
+  if(dest !== 'WhatsApp'){
+    var n=document.getElementById('oferta_wa_num'); if(n) n.value='';
+    var m=document.getElementById('oferta_wa_msg'); if(m) m.value='';
+  }
+  if(dest !== 'Checkout'){
+    var u=document.getElementById('oferta_checkout_url'); if(u) u.value='';
+  }
+}
+
+function onCtaFinalChip(dest, chipEl){
+  document.querySelectorAll('#cta-final-chips .chip').forEach(function(c){c.classList.remove('sel');});
+  chipEl.classList.add('sel');
+  document.getElementById('cta-final-wa').style.display = dest === 'WhatsApp' ? 'block' : 'none';
+  document.getElementById('cta-final-checkout').style.display = dest === 'Checkout' ? 'block' : 'none';
+  // reset the hidden one
+  if(dest === 'WhatsApp'){
+    var el = document.getElementById('cta_final_checkout_url');
+    if(el) el.value = '';
+  } else {
+    var wa = document.getElementById('cta_final_wa_num');
+    var wm = document.getElementById('cta_final_wa_msg');
+    if(wa) wa.value = '';
+    if(wm) wm.value = '';
+  }
+}
+
 </script>
 </body>
 </html>
